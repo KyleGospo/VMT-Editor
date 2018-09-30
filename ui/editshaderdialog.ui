@@ -1091,14 +1091,14 @@ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_baseTexture">
+         <widget class="QCheckBox" name="checkBox_diffuse">
           <property name="text">
            <string>Base Texture</string>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_baseTexture2">
+         <widget class="QCheckBox" name="checkBox_diffuse2">
           <property name="text">
            <string>Base Texture 2</string>
           </property>
@@ -1255,7 +1255,7 @@ border: 1px solid #222;
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_baseTextureTextureTransforms">
+         <widget class="QCheckBox" name="checkBox_diffuseTextureTransforms">
           <property name="text">
            <string>Base Texture Transform</string>
           </property>
@@ -1340,7 +1340,7 @@ border: 1px solid #222;
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_baseTexture</sender>
+   <sender>checkBox_diffuse</sender>
    <signal>toggled(bool)</signal>
    <receiver>EditShaderDialog</receiver>
    <slot>updateShader()</slot>
@@ -1356,7 +1356,7 @@ border: 1px solid #222;
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_baseTexture2</sender>
+   <sender>checkBox_diffuse2</sender>
    <signal>toggled(bool)</signal>
    <receiver>EditShaderDialog</receiver>
    <slot>updateShader()</slot>
@@ -1596,7 +1596,7 @@ border: 1px solid #222;
    </hints>
   </connection>
   <connection>
-   <sender>checkBox_baseTextureTextureTransforms</sender>
+   <sender>checkBox_diffuseTextureTransforms</sender>
    <signal>toggled(bool)</signal>
    <receiver>EditShaderDialog</receiver>
    <slot>updateShader()</slot>

@@ -1097,13 +1097,13 @@ QGroupBox::title {
                <layout class="QVBoxLayout" name="verticalLayout_preview_normalmap2"/>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_preview_basetexture1"/>
+               <layout class="QVBoxLayout" name="verticalLayout_preview_diffuse1"/>
               </item>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_preview_bumpmap1"/>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_preview_basetexture2"/>
+               <layout class="QVBoxLayout" name="verticalLayout_preview_diffuse2"/>
               </item>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_preview_bumpmap2"/>
@@ -1112,10 +1112,10 @@ QGroupBox::title {
                <layout class="QVBoxLayout" name="verticalLayout_preview_blendmod"/>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_preview_basetexture3"/>
+               <layout class="QVBoxLayout" name="verticalLayout_preview_diffuse3"/>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_preview_basetexture4"/>
+               <layout class="QVBoxLayout" name="verticalLayout_preview_diffuse4"/>
               </item>
               <item>
                <layout class="QVBoxLayout" name="verticalLayout_preview_detail"/>
@@ -2926,7 +2926,7 @@ QToolButton:pressed
                </widget>
               </item>
               <item>
-               <widget class="FadeGroupBox" name="groupBox_baseTexture">
+               <widget class="FadeGroupBox" name="groupBox_diffuse">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -3125,7 +3125,7 @@ QToolButton:pressed
                     </font>
                    </property>
                    <property name="toolTip">
-                    <string>$basetexture</string>
+                    <string>$diffuse</string>
                    </property>
                    <property name="text">
                     <string>Diffuse:</string>
@@ -3624,7 +3624,7 @@ QToolButton:pressed
                </widget>
               </item>
               <item>
-               <widget class="FadeGroupBox" name="groupBox_baseTextureTransforms">
+               <widget class="FadeGroupBox" name="groupBox_diffuseTransforms">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -5305,7 +5305,7 @@ QToolButton:pressed
                </widget>
               </item>
               <item>
-               <widget class="FadeGroupBox" name="groupBox_baseTexture2">
+               <widget class="FadeGroupBox" name="groupBox_diffuse2">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -6177,7 +6177,7 @@ QToolButton:pressed
                </widget>
               </item>
               <item>
-               <widget class="FadeGroupBox" name="groupBox_baseTexture3">
+               <widget class="FadeGroupBox" name="groupBox_diffuse3">
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -6864,7 +6864,7 @@ QToolButton:pressed
                </widget>
               </item>
               <item>
-               <widget class="FadeGroupBox" name="groupBox_baseTexture4">
+               <widget class="FadeGroupBox" name="groupBox_diffuse4">
                 <property name="font">
                  <font>
                   <family>Segoe UI</family>
@@ -15383,7 +15383,7 @@ QToolButton:pressed
                   </layout>
                  </item>
                  <item row="1" column="2">
-                  <widget class="QToolButton" name="toolButton_emissiveBlendBaseTexture">
+                  <widget class="QToolButton" name="toolButton_emissiveBlendDiffuse">
                    <property name="enabled">
                     <bool>true</bool>
                    </property>
@@ -15414,7 +15414,7 @@ QToolButton:pressed
                   </widget>
                  </item>
                  <item row="1" column="1">
-                  <widget class="TextureDragDropLineEdit" name="lineEdit_emissiveBlendBaseTexture">
+                  <widget class="TextureDragDropLineEdit" name="lineEdit_emissiveBlendDiffuse">
                    <property name="font">
                     <font>
                      <family>Segoe UI</family>
@@ -19760,12 +19760,12 @@ QScrollBar::handle:horizontal
      <property name="title">
       <string>Texture</string>
      </property>
-     <addaction name="action_baseTexture"/>
-     <addaction name="action_baseTexture2"/>
+     <addaction name="action_diffuse"/>
+     <addaction name="action_diffuse2"/>
      <addaction name="action_transparency"/>
      <addaction name="action_detail"/>
      <addaction name="action_color"/>
-     <addaction name="action_baseTextureTransforms"/>
+     <addaction name="action_diffuseTransforms"/>
      <addaction name="action_bumpmapTransforms"/>
      <addaction name="action_other"/>
      <addaction name="action_decal"/>
@@ -20324,13 +20324,13 @@ QScrollBar::handle:horizontal
     <string>&amp;Message Log</string>
    </property>
   </action>
-  <action name="action_baseTexture2">
+  <action name="action_diffuse2">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/basetexture2</normaloff>:/icons/basetexture2</iconset>
+     <normaloff>:/icons/diffuse2</normaloff>:/icons/diffuse2</iconset>
    </property>
    <property name="text">
     <string>Texture 2</string>
@@ -20581,7 +20581,7 @@ QScrollBar::handle:horizontal
     <string>Color</string>
    </property>
   </action>
-  <action name="action_baseTextureTransforms">
+  <action name="action_diffuseTransforms">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -20659,13 +20659,13 @@ QScrollBar::handle:horizontal
     <string>123</string>
    </property>
   </action>
-  <action name="action_baseTexture">
+  <action name="action_diffuse">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="../resources.qrc">
-     <normaloff>:/icons/basetexture</normaloff>:/icons/basetexture</iconset>
+     <normaloff>:/icons/diffuse</normaloff>:/icons/diffuse</iconset>
    </property>
    <property name="text">
     <string>Texture</string>
@@ -20730,12 +20730,12 @@ QScrollBar::handle:horizontal
     <string>...</string>
    </property>
   </action>
-  <action name="action_baseTexture3">
+  <action name="action_diffuse3">
    <property name="text">
     <string>Texture 3</string>
    </property>
   </action>
-  <action name="action_baseTexture4">
+  <action name="action_diffuse4">
    <property name="text">
     <string>Texture 4</string>
    </property>
@@ -26391,7 +26391,7 @@ QScrollBar::handle:horizontal
    </hints>
   </connection>
   <connection>
-   <sender>toolButton_emissiveBlendBaseTexture</sender>
+   <sender>toolButton_emissiveBlendDiffuse</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>browseVTF()</slot>
@@ -26519,7 +26519,7 @@ QScrollBar::handle:horizontal
    </hints>
   </connection>
   <connection>
-   <sender>lineEdit_emissiveBlendBaseTexture</sender>
+   <sender>lineEdit_emissiveBlendDiffuse</sender>
    <signal>textChanged(QString)</signal>
    <receiver>MainWindow</receiver>
    <slot>widgetChanged()</slot>

@@ -11,7 +11,7 @@ public:
 
 	TextureThread( QObject* parent )
 		: QThread(parent),
-		  baseTexture(true),
+		  diffuse(true),
 		  alpha(false),
 		  alphaTest(false),
 		  alphaOnly(false)
@@ -30,7 +30,7 @@ public:
 
 	QString object;
 
-	bool baseTexture;
+	bool diffuse;
 
 	bool alpha;
 

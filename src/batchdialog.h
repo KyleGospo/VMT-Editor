@@ -50,7 +50,7 @@ private:
 
 	QMap<Parameters, QString> defaultParameters;
 
-	bool basetextureOnly;
+    bool diffuseOnly;
 
 	QMap< QString, bool> listEntriesWithDirectories;
 
