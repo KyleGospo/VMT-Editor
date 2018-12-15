@@ -21,4 +21,4 @@
 
 // See shaders.txt for the list of corresponding shaders and the Notebook for the entire table
 // Patch group is only enforced for Patch shader
-// Diffuse Transform, Bumpmap Transform and Misc are allowed for every shader
+// BaseTexture Transform, Bumpmap Transform and Misc are allowed for every shader

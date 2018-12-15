@@ -17,7 +17,7 @@ bool emissiveblend::hasChanged(Ui::MainWindow *ui)
 
 	START
 	TEX(ui->lineEdit_emissiveBlendTexture)
-	TEX(ui->lineEdit_emissiveBlendDiffuse)
+	TEX(ui->lineEdit_emissiveBlendBaseTexture)
 	TEX(ui->lineEdit_emissiveBlendFlowTexture)
 	VAL(ui->doubleSpinBox_emissiveBlendScrollX, "0.0")
 	VAL(ui->doubleSpinBox_emissiveBlendScrollY, "0.0")
@@ -35,7 +35,7 @@ void emissiveblend::resetAction(Ui::MainWindow *ui)
 void emissiveblend::resetWidgets(Ui::MainWindow *ui)
 {
 	ui->lineEdit_emissiveBlendTexture->clear();
-	ui->lineEdit_emissiveBlendDiffuse->clear();
+	ui->lineEdit_emissiveBlendBaseTexture->clear();
 	ui->lineEdit_emissiveBlendFlowTexture->clear();
 	ui->toolButton_emissiveBlendTint->setStyleSheet(whiteBG);
 	ui->doubleSpinBox_emissiveBlendTint->setValue(1.0);
@@ -53,13 +53,13 @@ void initializeEmissiveBlend(Ui::MainWindow *ui, VmtFile *vmt)
 
 	switch (vmt->shader)
 	{
-	case Shader::S_VertexLitGeneric:
+    case Shader::S_Deferred_Brush:
 		ui->groupBox_emissiveBlend->setEnabled(true);
 		ui->groupBox_emissiveBlend->setChecked(true);
 		vmt->state.emissiveBlendEnabled = true;
 		break;
 	default:
-		ERROR("Emissive blend only works with the VertexLitGeneric shader");
+        ERROR("Emissive blend only works with the Deferred_Brush shader");
 	}
 }
 
@@ -138,7 +138,7 @@ void emissiveblend::parseParameters(Ui::MainWindow *ui, VmtFile *vmt, MainWindow
 
 	DO("$emissiveblendscrollvector", processScrollVector)
 	TEXTURE("$emissiveblendtexture", ui->lineEdit_emissiveBlendTexture)
-	TEXTURE("$emissiveblenddiffuse", ui->lineEdit_emissiveBlendDiffuse)
+	TEXTURE("$emissiveblendbasetexture", ui->lineEdit_emissiveBlendBaseTexture)
 	TEXTURE("$emissiveblendflowtexture", ui->lineEdit_emissiveBlendFlowTexture)
 	COLOR("$emissiveblendtint", ui->toolButton_emissiveBlendTint, ui->doubleSpinBox_emissiveBlendTint)
 	DOUBLE("$emissiveblendstrength", "1", ui->doubleSpinBox_emissiveBlendStrength)

@@ -1,9 +1,11 @@
 $diffuse
 $diffuse2
-$diffuse4
 $diffuse3
+$basetexture4
 $bumpmap
 $bumpmap2
+$bumpmap3
+$bumpmapdetail
 $surfaceprop
 $surfaceprop2
 $texture1_lumstart
@@ -133,7 +135,7 @@ $normalmap2
 $refracttint
 $refractamount
 $bluramount
-$diffusetransform
+$basetexturetransform
 $bumptransform
 $addbumpmaps
 $bumpdetailscale1

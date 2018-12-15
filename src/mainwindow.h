@@ -48,10 +48,10 @@ class MainWindow : public QMainWindow
 
 public:
 	enum GroupBoxes {
-		Diffuse,
-		Diffuse2,
-		Diffuse3,
-		Diffuse4,
+		BaseTexture,
+		BaseTexture2,
+		BaseTexture3,
+		BaseTexture4,
 		Transparency,
 		DetailTexture,
 		Color,
@@ -67,7 +67,7 @@ public:
 		WaterRefraction,
 		Fog,
 		Scroll,
-		DiffuseTransforms,
+		BaseTextureTransforms,
 		BumpMapTransforms,
 		Misc,
 		Patch,
@@ -90,7 +90,7 @@ public:
 	// set to true for calls from the ConversionThread
 	void previewTexture(const QString& object);
 
-	bool previewTexture( const QString& object, const QString& texture, bool diffuse, bool alpha, bool alphatest, bool alphaOnly, bool ignoreCache = false );
+	bool previewTexture( const QString& object, const QString& texture, bool basetexture, bool alpha, bool alphatest, bool alphaOnly, bool ignoreCache = false );
 
 	// public for ClickableLabel
 	Ui::MainWindow* ui;
@@ -495,7 +495,7 @@ private slots:
 	void toggleWaterRefraction();
 	void toggleWaterFog();
 
-	void on_action_diffuse2_triggered(bool checked);
+	void on_action_baseTexture2_triggered(bool checked);
 	void on_action_transparency_triggered(bool checked);
 	void on_action_detail_triggered(bool checked);
 	void on_action_other_triggered(bool checked);
@@ -508,12 +508,12 @@ private slots:
 	void on_action_waterReflection_triggered(bool checked);
 	void on_action_refraction_triggered(bool checked);
 	void on_action_fog_triggered(bool checked);
-	void on_action_diffuseTransforms_triggered(bool checked);
+	void on_action_baseTextureTransforms_triggered(bool checked);
 	void on_action_bumpmapTransforms_triggered(bool checked);
 	void on_action_color_triggered(bool checked);
 	void on_action_misc_triggered(bool checked);
 	void on_action_scroll_triggered(bool checked);
-	void on_action_diffuse_triggered(bool checked);
+	void on_action_baseTexture_triggered(bool checked);
 	void on_action_refract_triggered(bool checked);
 	void on_action_sprite_triggered(bool checked);
 	void on_action_unlitTwoTexture_triggered(bool checked);

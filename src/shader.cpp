@@ -91,40 +91,33 @@ QString Shader::convert( Shaders index ) {
 
 	case 2: return "DecalModulate";
 
-	case 3: return "Infected";
+    case 3: return "Deferred_Model";
 
-	case 4: return "LightmappedGeneric";
+    case 4: return "Modulate";
 
-	case 5: return "Modulate";
+    case 5: return "MonitorScreen";
 
-	case 6: return "MonitorScreen";
+    case 6: return "Patch";
 
-	case 7: return "Patch";
+    case 7: return "Predator";
 
-	case 8: return "Predator";
+    case 8: return "Refract";
 
-	case 9: return "Refract";
+    case 9: return "Shattered Glass";
 
-	case 10: return "Shattered Glass";
+    case 10: return "Sprite";
 
-	case 11: return "Sprite";
+    case 11: return "SpriteCard";
 
-	case 12: return "SpriteCard";
+    case 12: return "UnlitGeneric";
 
-	case 13: return "UnlitGeneric";
+    case 13: return "UnlitTwoTexture";
 
-	case 14: return "UnlitTwoTexture";
+    case 14: return "Deferred_Brush";
 
-	case 15: return "VertexLitGeneric";
+    case 15: return "Water";
 
-	case 16: return "Water";
-
-	case 17: return "WorldVertexTransition";
-
-	case 18: return "Custom";
-
-	case 19: return "Lightmapped_4WayBlend";
-
+    case 17: return "Custom";
 	default:
 
 		MsgBox::warning(NULL, "Wrong parameter passed!",
@@ -143,8 +136,7 @@ Shader::Shaders Shader::convert(const QString &text)
 	CHECK("cable", S_Cable)
 	CHECK("decal", S_Decal)
 	CHECK("decalmodulate", S_DecalModulate)
-	CHECK("infected", S_Infected)
-	CHECK("lightmappedgeneric", S_LightmappedGeneric)
+    CHECK("deferred_model", S_Deferred_Model)
 	CHECK("modulate", S_Modulate)
 	CHECK("monitorscreen", S_MonitorScreen)
 	CHECK("patch", S_Patch)
@@ -155,10 +147,8 @@ Shader::Shaders Shader::convert(const QString &text)
 	CHECK("spritecard", S_SpriteCard)
 	CHECK("unlitgeneric", S_UnlitGeneric)
 	CHECK("unlittwotexture", S_UnlitTwoTexture)
-	CHECK("vertexlitgeneric", S_VertexLitGeneric)
+    CHECK("vertexlitgeneric", S_Deferred_Brush)
 	CHECK("water", S_Water)
-	CHECK("worldvertextransition", S_WorldVertexTransition)
-	CHECK("lightmapped_4wayblend", S_Lightmapped_4WayBlend)
 	return S_Custom;
 }
 

@@ -117,8 +117,8 @@ void EditShaderDialog::loadAllowedShaderGroups()
 
 void EditShaderDialog::resetCheckboxes()
 {
-	ui->checkBox_diffuse->setChecked(false);
-	ui->checkBox_diffuse2->setChecked(false);
+	ui->checkBox_baseTexture->setChecked(false);
+	ui->checkBox_baseTexture2->setChecked(false);
 	ui->checkBox_transparency->setChecked(false);
 	ui->checkBox_detail->setChecked(false);
 	ui->checkBox_color->setChecked(false);
@@ -133,15 +133,15 @@ void EditShaderDialog::resetCheckboxes()
 	ui->checkBox_refraction->setChecked(false);
 	ui->checkBox_fog->setChecked(false);
 	ui->checkBox_scroll->setChecked(false);
-	ui->checkBox_diffuseTextureTransforms->setChecked(false);
+	ui->checkBox_baseTextureTextureTransforms->setChecked(false);
 	ui->checkBox_bumpmapTextureTransforms->setChecked(false);
 	ui->checkBox_misc->setChecked(false);
 	ui->checkBox_refract->setChecked(false);
 	ui->checkBox_sprite->setChecked(false);
 	ui->checkBox_unlitTwoTexture->setChecked(false);
 
-	ui->checkBox_diffuse->setDisabled(true);
-	ui->checkBox_diffuse2->setDisabled(true);
+	ui->checkBox_baseTexture->setDisabled(true);
+	ui->checkBox_baseTexture2->setDisabled(true);
 	ui->checkBox_transparency->setDisabled(true);
 	ui->checkBox_detail->setDisabled(true);
 	ui->checkBox_color->setDisabled(true);
@@ -156,15 +156,15 @@ void EditShaderDialog::resetCheckboxes()
 	ui->checkBox_refraction->setDisabled(true);
 	ui->checkBox_fog->setDisabled(true);
 	ui->checkBox_scroll->setDisabled(true);
-	ui->checkBox_diffuseTextureTransforms->setDisabled(true);
+	ui->checkBox_baseTextureTextureTransforms->setDisabled(true);
 	ui->checkBox_bumpmapTextureTransforms->setDisabled(true);
 	ui->checkBox_misc->setDisabled(true);
 	ui->checkBox_refract->setDisabled(true);
 	ui->checkBox_sprite->setDisabled(true);
 	ui->checkBox_unlitTwoTexture->setDisabled(true);
 
-	ui->checkBox_diffuse->setChecked(false);
-	ui->checkBox_diffuse2->setChecked(false);
+	ui->checkBox_baseTexture->setChecked(false);
+	ui->checkBox_baseTexture2->setChecked(false);
 	ui->checkBox_transparency->setChecked(false);
 	ui->checkBox_detail->setChecked(false);
 	ui->checkBox_color->setChecked(false);
@@ -179,7 +179,7 @@ void EditShaderDialog::resetCheckboxes()
 	ui->checkBox_refraction->setChecked(false);
 	ui->checkBox_fog->setChecked(false);
 	ui->checkBox_scroll->setChecked(false);
-	ui->checkBox_diffuseTextureTransforms->setChecked(false);
+	ui->checkBox_baseTextureTextureTransforms->setChecked(false);
 	ui->checkBox_bumpmapTextureTransforms->setChecked(false);
 	ui->checkBox_misc->setChecked(false);
 	ui->checkBox_refract->setChecked(false);
@@ -213,8 +213,8 @@ void EditShaderDialog::shaderSelectionChanged()
 
 			switch(mAllowedShaderGroups.value(shader).at(i)) {
 
-				case Shader::G_Base_Texture: ui->checkBox_diffuse->setEnabled(true); break;
-				case Shader::G_Base_Texture2: ui->checkBox_diffuse2->setEnabled(true); break;
+				case Shader::G_Base_Texture: ui->checkBox_baseTexture->setEnabled(true); break;
+				case Shader::G_Base_Texture2: ui->checkBox_baseTexture2->setEnabled(true); break;
 				case Shader::G_Transparency: ui->checkBox_transparency->setEnabled(true); break;
 				case Shader::G_Detail: ui->checkBox_detail->setEnabled(true); break;
 				case Shader::G_Color: ui->checkBox_color->setEnabled(true); break;
@@ -229,7 +229,7 @@ void EditShaderDialog::shaderSelectionChanged()
 				case Shader::G_Refraction: ui->checkBox_refraction->setEnabled(true); break;
 				case Shader::G_Fog: ui->checkBox_fog->setEnabled(true); break;
 				case Shader::G_Scroll: ui->checkBox_scroll->setEnabled(true); break;
-				case Shader::G_Base_Texture_Texture_Transforms: ui->checkBox_diffuseTextureTransforms->setEnabled(true); break;
+				case Shader::G_Base_Texture_Texture_Transforms: ui->checkBox_baseTextureTextureTransforms->setEnabled(true); break;
 				case Shader::G_Bumpmap_Texture_Transforms: ui->checkBox_bumpmapTextureTransforms->setEnabled(true); break;
 				case Shader::G_Miscellaneous: ui->checkBox_misc->setEnabled(true); break;
 				case Shader::G_Refract: ui->checkBox_refract->setEnabled(true); break;
@@ -244,8 +244,8 @@ void EditShaderDialog::shaderSelectionChanged()
 			}
 		}
 
-		if(ui->checkBox_diffuse->isEnabled() ||
-			ui->checkBox_diffuse2->isEnabled() ||
+		if(ui->checkBox_baseTexture->isEnabled() ||
+			ui->checkBox_baseTexture2->isEnabled() ||
 			ui->checkBox_transparency->isEnabled() ||
 			ui->checkBox_detail->isEnabled() ||
 			ui->checkBox_color->isEnabled() ||
@@ -263,7 +263,7 @@ void EditShaderDialog::shaderSelectionChanged()
 			ui->checkBox_fog->isEnabled() ||
 			ui->checkBox_scroll->isEnabled()) ui->groupBox_water->setEnabled(true);
 
-		if(ui->checkBox_diffuseTextureTransforms->isEnabled() ||
+		if(ui->checkBox_baseTextureTextureTransforms->isEnabled() ||
 			ui->checkBox_bumpmapTextureTransforms->isEnabled() ||
 			ui->checkBox_misc->isEnabled() ||
 			ui->checkBox_refract->isEnabled() ||
@@ -274,7 +274,7 @@ void EditShaderDialog::shaderSelectionChanged()
 
 		if(shader != Shader::S_Patch && shader != Shader::S_Refract && shader != Shader::S_UnlitTwoTexture && shader != Shader::S_Water) {
 
-			ui->checkBox_diffuse->setChecked(true);
+			ui->checkBox_baseTexture->setChecked(true);
 
 		} if( shader == Shader::S_Refract) {
 
@@ -304,8 +304,8 @@ void EditShaderDialog::shaderSelectionChanged()
 
 					switch(mChangedShaders.at(i).groups.at(j)) {
 
-						case Shader::G_Base_Texture: ui->checkBox_diffuse->setChecked(true); break;
-						case Shader::G_Base_Texture2: ui->checkBox_diffuse2->setChecked(true); break;
+						case Shader::G_Base_Texture: ui->checkBox_baseTexture->setChecked(true); break;
+						case Shader::G_Base_Texture2: ui->checkBox_baseTexture2->setChecked(true); break;
 						case Shader::G_Transparency: ui->checkBox_transparency->setChecked(true); break;
 						case Shader::G_Detail: ui->checkBox_detail->setChecked(true); break;
 						case Shader::G_Color: ui->checkBox_color->setChecked(true); break;
@@ -320,7 +320,7 @@ void EditShaderDialog::shaderSelectionChanged()
 						case Shader::G_Refraction: ui->checkBox_refraction->setChecked(true); break;
 						case Shader::G_Fog: ui->checkBox_fog->setChecked(true); break;
 						case Shader::G_Scroll: ui->checkBox_scroll->setChecked(true); break;
-						case Shader::G_Base_Texture_Texture_Transforms: ui->checkBox_diffuseTextureTransforms->setChecked(true); break;
+						case Shader::G_Base_Texture_Texture_Transforms: ui->checkBox_baseTextureTextureTransforms->setChecked(true); break;
 						case Shader::G_Bumpmap_Texture_Transforms: ui->checkBox_bumpmapTextureTransforms->setChecked(true); break;
 						case Shader::G_Miscellaneous: ui->checkBox_misc->setChecked(true); break;
 						case Shader::G_Refract: ui->checkBox_refract->setChecked(true); break;
@@ -499,11 +499,11 @@ void EditShaderDialog::updateShader()
 
 			QVector<Shader::Groups> enabledGroups;
 
-			if (ui->checkBox_diffuse->isChecked() &&
-				ui->checkBox_diffuse->isEnabled()) enabledGroups.push_back(Shader::G_Base_Texture);
+			if (ui->checkBox_baseTexture->isChecked() &&
+				ui->checkBox_baseTexture->isEnabled()) enabledGroups.push_back(Shader::G_Base_Texture);
 
-			if (ui->checkBox_diffuse2->isChecked() &&
-				ui->checkBox_diffuse2->isEnabled()) enabledGroups.push_back(Shader::G_Base_Texture2);
+			if (ui->checkBox_baseTexture2->isChecked() &&
+				ui->checkBox_baseTexture2->isEnabled()) enabledGroups.push_back(Shader::G_Base_Texture2);
 
 			if (ui->checkBox_transparency->isChecked() &&
 				ui->checkBox_transparency->isEnabled()) enabledGroups.push_back(Shader::G_Transparency);
@@ -547,8 +547,8 @@ void EditShaderDialog::updateShader()
 			if (ui->checkBox_scroll->isChecked() &&
 				ui->checkBox_scroll->isEnabled()) enabledGroups.push_back(Shader::G_Scroll);
 
-			if (ui->checkBox_diffuseTextureTransforms->isChecked() &&
-				ui->checkBox_diffuseTextureTransforms->isEnabled()) enabledGroups.push_back(Shader::G_Base_Texture_Texture_Transforms);
+			if (ui->checkBox_baseTextureTextureTransforms->isChecked() &&
+				ui->checkBox_baseTextureTextureTransforms->isEnabled()) enabledGroups.push_back(Shader::G_Base_Texture_Texture_Transforms);
 
 			if (ui->checkBox_bumpmapTextureTransforms->isChecked() &&
 				ui->checkBox_bumpmapTextureTransforms->isEnabled()) enabledGroups.push_back(Shader::G_Bumpmap_Texture_Transforms);

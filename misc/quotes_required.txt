@@ -1,12 +1,14 @@
 $diffuse
 $diffuse2
 $diffuse3
-$diffuse4
+$basetexture4
 $blendmodulatetexture
 $bottommaterial
-$diffusetransform
+$basetexturetransform
 $bumpmap
 $bumpmap2
+$bumpmap3
+$bumpmapdetail
 $bumptransform
 $bumptransform2
 $color

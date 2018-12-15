@@ -70,11 +70,11 @@ void initializeLayerblend(Ui::MainWindow *ui, VmtFile *vmt)
 {
 	switch (vmt->shader)
 	{
-	case Shader::S_WorldVertexTransition:
-		ui->groupBox_layerblend->setEnabled(true);
-		ui->groupBox_layerblend->setChecked(true);
-		vmt->state.layerBlendEnabled = true;
-		break;
+    //case Shader::S_WorldVertexTransition:
+    //	ui->groupBox_layerblend->setEnabled(true);
+    //	ui->groupBox_layerblend->setChecked(true);
+    //	vmt->state.layerBlendEnabled = true;
+    //	break;
 	default:
 		break;
 	}

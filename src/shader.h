@@ -11,23 +11,20 @@ struct Shader {
 		S_Cable = 0,
 		S_Decal, // 1
 		S_DecalModulate, // 2
-		S_Infected, // 3
-		S_LightmappedGeneric, // 4
-		S_Modulate, // 5
-		S_MonitorScreen, // 6
-		S_Patch, // 7
-		S_Predator, // 8
-		S_Refract, // 9
-		S_ShatteredGlass, // 10
-		S_Sprite, // 11
-		S_SpriteCard, // 12
-		S_UnlitGeneric, // 13
-		S_UnlitTwoTexture, // 14
-		S_VertexLitGeneric, // 15
-		S_Water, // 16
-		S_WorldVertexTransition, // 17
-		S_Custom, // 18
-		S_Lightmapped_4WayBlend // 19
+        S_Deferred_Model, // 3
+        S_Modulate, // 4
+        S_MonitorScreen, // 5
+        S_Patch, // 6
+        S_Predator, // 7
+        S_Refract, // 8
+        S_ShatteredGlass, // 9
+        S_Sprite, // 10
+        S_SpriteCard, // 11
+        S_UnlitGeneric, // 12
+        S_UnlitTwoTexture, // 13
+        S_Deferred_Brush, // 14
+        S_Water, // 15
+        S_Custom, // 16
 	};
 
 	enum Groups {

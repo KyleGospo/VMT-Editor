@@ -17,10 +17,10 @@
 #endif
 
 // TODO: Verify ShatteredGlass (without spaces)
-static QStringList gShaders = (QStringList() << "Cable" << "Decal" << "DecalModulate" << "Infected" << "LightmappedGeneric"
+static QStringList gShaders = (QStringList() << "Cable" << "Decal" << "DecalModulate" << "Infected" << "Deferred_Model"
 											 << "Modulate" << "MonitorScreen" << "Patch" << "Predator" << "Refract"
 											 << "ShatteredGlass" << "Sprite" << "SpriteCard" << "UnlitGeneric" << "UnlitTwoTexture"
-											 << "VertexLitGeneric" << "Water" << "WorldVertexTransition" << "Shattered Glass" << "Lightmapped_4WayBlend" );
+                                             << "Deferred_Brush" << "Water" << "Shattered Glass" << "Lightmapped_4WayBlend" );
 
 
 #define Error(x) { \

@@ -15,11 +15,11 @@ VmtParser::VmtParser( QListWidget* logger ) :
 
 	// Used for nice VMT formatting, the order here is important
 
-	mGroups.append( "$diffuse;$texture2;$bumpmap;$surfaceprop;$ssbump;$texture1_lumstart;$texture1_lumend" );
-	mGroups.append( "$diffuse2;$bumpmap2;$surfaceprop2;$texture2_uvscale;$texture2_lumstart;$texture2_lumend;$texture2_blendstart;$texture2_blendend;$lumblendfactor2" );
+    mGroups.append( "$diffuse;$texture2;$bumpmap;$surfaceprop;$ssbump;$texture1_lumstart;$texture1_lumend" );
+    mGroups.append( "$diffuse2;$bumpmap2;$surfaceprop2;$texture2_uvscale;$texture2_lumstart;$texture2_lumend;$texture2_blendstart;$texture2_blendend;$lumblendfactor2" );
 
-	mGroups.append( "$diffuse3;$texture3_uvscale;$texture3_lumstart;$texture3_lumend;$texture3_blendstart;$texture3_blendend;$lumblendfactor3" );
-	mGroups.append( "$diffuse4;$texture4_uvscale;$texture4_lumstart;$texture4_lumend;$texture4_blendstart;$texture4_blendend;$lumblendfactor4" );
+    mGroups.append( "$diffuse3;$texture3_uvscale;$texture3_lumstart;$texture3_lumend;$texture3_blendstart;$texture3_blendend;$lumblendfactor3" );
+	mGroups.append( "$basetexture4;$texture4_uvscale;$texture4_lumstart;$texture4_lumend;$texture4_blendstart;$texture4_blendend;$lumblendfactor4" );
 	mGroups.append( "$seamless_scale;$lightwarptexture;$reflectivity;$reflectivity2");
 	mGroups.append( "$detail;$detailblendmode;$detailscale;$detailblendfactor;$detail2;$detailblendmode2;$detailscale2;$detailblendfactor2;$detailblendfactor3;$detailblendfactor4" );
 	mGroups.append( "$decaltexture;$decalblendmode" );
@@ -39,9 +39,9 @@ VmtParser::VmtParser( QListWidget* logger ) :
 	mGroups.append( "$refracttexture;$refract;$refracttinttexture;$refracttint;$refractamount;$bluramount;$refractblur" );
 	mGroups.append( "$fogenable;$fogcolor;$fogstart;$fogend;$flashlighttint;$lightmapwaterfog" );
 
-	mGroups.append( "$emissiveblendenabled;$emissiveblendtexture;$emissiveblenddiffuse;$emissiveblendflowtexture;$emissiveblendtint;$emissiveblendstrength;$emissiveblendscrollvector");
+	mGroups.append( "$emissiveblendenabled;$emissiveblendtexture;$emissiveblendbasetexture;$emissiveblendflowtexture;$emissiveblendtint;$emissiveblendstrength;$emissiveblendscrollvector");
 	mGroups.append( "$addbumpmaps;$bumpdetailscale1;$bumpdetailscale2;$bumptransform2" );
-	mGroups.append( "$diffusetransform;$bumptransform" );
+	mGroups.append( "$basetexturetransform;$bumptransform" );
 	mGroups.append( "$vertexcolor;$vertexalpha;$nodecal;$ignorez;$nofog;$nolod;$no_fullbright;$disablecsmlookup" );
 	mGroups.append( "$color;$color2;$blendtintbybasealpha;$tintmasktexture;$envmapmaskintintmasktexture" );
 	mGroups.append( "$spriteorientation;$spriteorigin" );
@@ -343,7 +343,7 @@ VmtFile VmtParser::loadVmtFile( const QString& relativeFileName, bool isTemplate
 			bool expectingOpenBracket = false;
 			bool expectingEOF = false;
 
-			// Hack for allowing shader name lines like (but only those): VertexLitGeneric {
+            // Hack for allowing shader name lines like (but only those): Deferred_Brush {
 			bool hack = false;
 
 			uint shaderBracketCounter = 0;

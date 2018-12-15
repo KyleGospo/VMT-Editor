@@ -63,8 +63,8 @@
         <file alias="removeShader">images/remove_shader.png</file>
         <file alias="success">images/success.png</file>
         <file alias="failed">images/failed.png</file>
-        <file alias="diffuse">images/diffuse.png</file>
-        <file alias="diffuse2">images/diffuse2.png</file>
+        <file alias="basetexture">images/basetexture.png</file>
+        <file alias="basetexture2">images/basetexture2.png</file>
         <file alias="color">images/color.png</file>
         <file alias="detail">images/detail.png</file>
         <file alias="other">images/other.png</file>

@@ -367,7 +367,7 @@ MainWindow::MainWindow(QString fileToOpen, QWidget* parent) :
 	ui->lineEdit_tintMask->setValidator(windowsFilenameValidator);
 	ui->lineEdit_phongWarp->setValidator(windowsFilenameValidator);
 	ui->lineEdit_emissiveBlendTexture->setValidator(windowsFilenameValidator);
-	ui->lineEdit_emissiveBlendDiffuse->setValidator(windowsFilenameValidator);
+	ui->lineEdit_emissiveBlendBaseTexture->setValidator(windowsFilenameValidator);
 	ui->lineEdit_emissiveBlendFlowTexture->setValidator(windowsFilenameValidator);
 
 
@@ -434,7 +434,7 @@ MainWindow::MainWindow(QString fileToOpen, QWidget* parent) :
 		SLOT(handleTextureDrop(QString)));
 	connect(ui->lineEdit_emissiveBlendTexture, SIGNAL(droppedTexture(QString)),
 		SLOT(handleTextureDrop(QString)));
-	connect(ui->lineEdit_emissiveBlendDiffuse, SIGNAL(droppedTexture(QString)),
+	connect(ui->lineEdit_emissiveBlendBaseTexture, SIGNAL(droppedTexture(QString)),
 		SLOT(handleTextureDrop(QString)));
 	connect(ui->lineEdit_emissiveBlendFlowTexture, SIGNAL(droppedTexture(QString)),
 		SLOT(handleTextureDrop(QString)));
@@ -606,8 +606,8 @@ MainWindow::MainWindow(QString fileToOpen, QWidget* parent) :
 	addGLWidget( ":/overlays/bump1", ui->verticalLayout_preview_normalmap1, "preview_normalmap1" );
 	addGLWidget( ":/overlays/bump2", ui->verticalLayout_preview_normalmap2, "preview_normalmap2" );
 
-	addGLWidget( ":/overlays/diffuse3", ui->verticalLayout_preview_diffuse3, "preview_diffuse3" );
-	addGLWidget( ":/overlays/diffuse4", ui->verticalLayout_preview_diffuse4, "preview_diffuse4" );
+	addGLWidget( ":/overlays/diffuse3", ui->verticalLayout_preview_basetexture3, "preview_basetexture3" );
+	addGLWidget( ":/overlays/diffuse4", ui->verticalLayout_preview_basetexture4, "preview_basetexture4" );
 
 	addGLWidget( ":/overlays/detail", ui->verticalLayout_preview_detail, "preview_detail" );
 	addGLWidget( ":/overlays/detail2", ui->verticalLayout_preview_detail2, "preview_detail2" );
@@ -621,13 +621,13 @@ MainWindow::MainWindow(QString fileToOpen, QWidget* parent) :
 		glWidget_diffuse1->setMinimumSize( QSize(192, 192) );
 		glWidget_diffuse1->setMaximumSize( QSize(192, 192) );
 
-	ui->verticalLayout_preview_diffuse1->addWidget(glWidget_diffuse1);
+	ui->verticalLayout_preview_basetexture1->addWidget(glWidget_diffuse1);
 
 	glWidget_diffuse2 = new GLWidget_Diffuse2(this);
 		glWidget_diffuse2->setMinimumSize( QSize(192, 192) );
 		glWidget_diffuse2->setMaximumSize( QSize(192, 192) );
 
-	ui->verticalLayout_preview_diffuse2->addWidget(glWidget_diffuse2);
+	ui->verticalLayout_preview_basetexture2->addWidget(glWidget_diffuse2);
 
 	glWidget_envmap = new GLWidget_Spec(this, 0);
 		glWidget_envmap->setMinimumSize( QSize(192, 192) );
@@ -668,7 +668,7 @@ MainWindow::MainWindow(QString fileToOpen, QWidget* parent) :
 	ui->lineEdit_diffuseAlpha->setVisible(false);
 	ui->toolButton_diffuseAlpha->setVisible(false);
 
-	ui->comboBox_shader->setCurrentIndex(ui->comboBox_shader->findText("LightmappedGeneric"));
+    ui->comboBox_shader->setCurrentIndex(ui->comboBox_shader->findText("Deferred_Model"));
 		mIgnoreShaderChanged = false;
 	shaderChanged();
 
@@ -690,7 +690,7 @@ MainWindow::MainWindow(QString fileToOpen, QWidget* parent) :
 		// clearing to avoid loading it in showEvent()
 		initialFile = "";
 
-		const QString objectName = "preview_diffuse1";
+		const QString objectName = "preview_basetexture1";
 		const QString fileType = fileToOpen.right( fileToOpen.size() - fileToOpen.lastIndexOf(".") );
 
 		if( fileToOpen.startsWith( currentGameMaterialDir(), Qt::CaseInsensitive) ) {
@@ -1030,8 +1030,8 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	QString bumpmap;
 
-	bool showDiffuse = false;
-	bool showDiffuse2 = false;
+	bool showBaseTexture = false;
+	bool showBaseTexture2 = false;
 	bool showColor = false;
 	bool showOther = false;
 	bool showTransparency = false;
@@ -1046,7 +1046,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 	bool showWaterRefraction = false;
 	bool showWaterFog = false;
 
-	bool showDiffuseTransform = false;
+	bool showBaseTextureTransform = false;
 	bool showBumpmapTransform = false;
 	bool showMiscellaneous = false;
 	bool showScroll = false;
@@ -1056,13 +1056,13 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 	//----------------------------------------------------------------------------------------//
 
 	QString value;
-	if( !( value = vmt.parameters.take("$diffuse") ).isEmpty() )
+	if( !( value = vmt.parameters.take("$basetexture") ).isEmpty() )
 	{
-		QString texture = validateTexture( "preview_diffuse1", value, "$diffuse", realGameinfoDir );
+		QString texture = validateTexture( "preview_basetexture1", value, "$basetexture", realGameinfoDir );
 
 		if( vmt.shaderName == "Water" ) {
 
-			Error("$diffuse does not work with the Water shader!")
+			Error("$basetexture does not work with the Water shader!")
 
 			if( !texture.isEmpty() )
 				ui->lineEdit_diffuse->setText(texture);
@@ -1078,7 +1078,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 			if( !texture.isEmpty() )
 				ui->lineEdit_diffuse->setText(texture);
 
-			showDiffuse = true;
+			showBaseTexture = true;
 			createReconvertAction(ui->lineEdit_diffuse, value);
 		}
 	}
@@ -1111,7 +1111,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 		if( vmt.shaderName.compare("UnlitTwoTexture", Qt::CaseInsensitive) )
 			Error("$texture2 only works with the UnlitTwoTexture shader!")
 
-		QString texture = validateTexture( "preview_diffuse2", value, "$texture2", realGameinfoDir );
+		QString texture = validateTexture( "preview_basetexture2", value, "$texture2", realGameinfoDir );
 
 		if( !texture.isEmpty() )
 			ui->lineEdit_unlitTwoTextureDiffuse2->setText(texture);
@@ -1120,42 +1120,42 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	//----------------------------------------------------------------------------------------//
 
-	if( !( value = vmt.parameters.take("$diffuse2") ).isEmpty() )
+    if( !( value = vmt.parameters.take("$diffuse2") ).isEmpty() )
 	{
-		QString texture = validateTexture( "preview_diffuse2", value, "$diffuse2", realGameinfoDir );
+        QString texture = validateTexture( "preview_basetexture2", value, "$diffuse2", realGameinfoDir );
 
-		if( vmt.shaderName.compare("WorldVertexTransition", Qt::CaseInsensitive) &&
-			vmt.shaderName.compare("Lightmapped_4WayBlend", Qt::CaseInsensitive) ) {
-
-			Error("$diffuse2 only works with the WorldVertexTransition or the Lightmapped_4WayBlend shader!")
-		}
+        //if( vmt.shaderName.compare("WorldVertexTransition", Qt::CaseInsensitive) &&
+        //	vmt.shaderName.compare("Lightmapped_4WayBlend", Qt::CaseInsensitive) ) {
+        //
+        //	Error("$basetexture2 only works with the WorldVertexTransition or the Lightmapped_4WayBlend shader!")
+        //}
 
 		if( !texture.isEmpty() )
 			ui->lineEdit_diffuse2->setText(texture);
 
-		showDiffuse2 = true;
+		showBaseTexture2 = true;
 
 		createReconvertAction(ui->lineEdit_diffuse2, value);
 	}
 
-	if( !( value = vmt.parameters.take("$diffuse3") ).isEmpty() ) {
+    if( !( value = vmt.parameters.take("$diffuse3") ).isEmpty() ) {
 
-		QString texture = validateTexture( "preview_diffuse3", value, "$diffuse3", realGameinfoDir );
+        QString texture = validateTexture( "preview_basetexture3", value, "$diffuse3", realGameinfoDir );
 
-		if( vmt.shaderName.compare("Lightmapped_4WayBlend", Qt::CaseInsensitive) ) \
-			Error("$diffuse3 only works with the Lightmapped_4WayBlend CS:GO shader!") \
+        //if( vmt.shaderName.compare("Lightmapped_4WayBlend", Qt::CaseInsensitive) ) \
+        //	Error("$basetexture3 only works with the Lightmapped_4WayBlend CS:GO shader!") \
 
 		if( !texture.isEmpty() )
 			ui->lineEdit_diffuse3->setText(texture);
 			createReconvertAction(ui->lineEdit_diffuse3, value);
 	}
 
-	if( !( value = vmt.parameters.take("$diffuse4") ).isEmpty() ) {
+	if( !( value = vmt.parameters.take("$basetexture4") ).isEmpty() ) {
 
-		QString texture = validateTexture( "preview_diffuse4", value, "$diffuse4", realGameinfoDir );
+		QString texture = validateTexture( "preview_basetexture4", value, "$basetexture4", realGameinfoDir );
 
 		if( vmt.shaderName.compare("Lightmapped_4WayBlend", Qt::CaseInsensitive) ) \
-			Error("$diffuse4 only works with the Lightmapped_4WayBlend CS:GO shader!") \
+			Error("$basetexture4 only works with the Lightmapped_4WayBlend CS:GO shader!") \
 
 		if( !texture.isEmpty() )
 			ui->lineEdit_diffuse4->setText(texture);
@@ -1201,7 +1201,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 			if( !texture.isEmpty() )
 				ui->lineEdit_bumpmap->setText(texture);
 
-			showDiffuse = true;
+			showBaseTexture = true;
 			createReconvertAction(ui->lineEdit_bumpmap, value);
 		}
 	}
@@ -1218,7 +1218,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				createReconvertAction(ui->lineEdit_bump2, value);
 			} else {
 				ui->lineEdit_bumpmap2->setText(texture);
-				showDiffuse2 = true;
+				showBaseTexture2 = true;
 				createReconvertAction(ui->lineEdit_bumpmap2, value);
 			}
 		}
@@ -1226,19 +1226,19 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	//----------------------------------------------------------------------------------------//
 
-	if( !( value = vmt.parameters.take("$blendmodulatetexture") ).isEmpty() ) {
+    /*if( !( value = vmt.parameters.take("$blendmodulatetexture") ).isEmpty() ) {
 
-		if( vmt.shaderName.compare("WorldVertexTransition", Qt::CaseInsensitive) )
-			Error("$blendmodulatetexture is only works with WorldVertexTransition shader!");
+        if( vmt.shaderName.compare("WorldVertexTransition", Qt::CaseInsensitive) )
+            Error("$blendmodulatetexture is only works with WorldVertexTransition shader!");
 
 		const QString texture = validateTexture("preview_blendmod", value,
 			"$blendmodulatetexture", realGameinfoDir);
 
 		//utils::parseTexture("$blendmodulatetexture", value, ui, ui->lineEdit_blendmodulate, vmt);
 		ui->lineEdit_blendmodulate->setText(texture);
-		showDiffuse2 = true;
+		showBaseTexture2 = true;
 		createReconvertAction(ui->lineEdit_blendmodulate, value);
-	}
+    }*/
 
 	if( !( value = vmt.parameters.take("$lightwarptexture") ).isEmpty() )
 	{
@@ -1256,7 +1256,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 		showOther = true;
 	}
 
-	if( !( value = vmt.parameters.take("$reflectivity2") ).isEmpty() ) {
+    /*if( !( value = vmt.parameters.take("$reflectivity2") ).isEmpty() ) {
 		if( vmt.shaderName.compare("WorldVertexTransition", Qt::CaseInsensitive) )
 			Error("$reflectivity is only works with WorldVertexTransition shader!")
 		applyColor("$reflectivity2", value,
@@ -1264,15 +1264,15 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 			ui->doubleSpinBox_reflectivity_2, ui);
 
 		showOther = true;
-	}
+    }*/
 
 	//----------------------------------------------------------------------------------------//
 
-	if( !( value = vmt.parameters.take("$ssbump") ).isEmpty() )
+    /*if( !( value = vmt.parameters.take("$ssbump") ).isEmpty() )
 	{
-		if( !(vmt.shaderName == "LightmappedGeneric" || vmt.shaderName == "WorldVertexTransition") )
+        if( !(vmt.shaderName == "Deferred_Model" || vmt.shaderName == "WorldVertexTransition") )
 		{
-			Error("$ssbump only works with the LightmappedGeneric and WorldVertexTransition shaders!")
+            Error("$ssbump only works with the Deferred_Model and WorldVertexTransition shaders!")
 		}
 		else
 		{
@@ -1280,8 +1280,8 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				ui->checkBox_ssbump->setChecked(true);
 		}
 
-		showDiffuse = true;
-	}
+		showBaseTexture = true;
+    }*/
 
 	//----------------------------------------------------------------------------------------//
 
@@ -1480,7 +1480,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				ui->comboBox_surface->setCurrentIndex(0);
 			}
 
-			showDiffuse = true;
+			showBaseTexture = true;
 		}
 	}
 
@@ -1505,19 +1505,19 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 			ui->comboBox_surface2->setCurrentIndex(0);
 		}
 
-		showDiffuse2 = true;
+		showBaseTexture2 = true;
 	}
 
 	//----------------------------------------------------------------------------------------//
 
-	if( !( value = vmt.parameters.take("$seamless_scale") ).isEmpty() )
+    /*if( !( value = vmt.parameters.take("$seamless_scale") ).isEmpty() )
 	{
 		bool ok;
 		double doubleScale = value.toDouble(&ok);
 
-		if( !(vmt.shaderName == "LightmappedGeneric" || vmt.shaderName == "WorldVertexTransition") )
+        if( !(vmt.shaderName == "Deferred_Model" || vmt.shaderName == "WorldVertexTransition") )
 		{
-			Error("$seamless_scale only works with the LightmappedGeneric and WorldVertexTransition shaders!")
+            Error("$seamless_scale only works with the Deferred_Model and WorldVertexTransition shaders!")
 		}
 		else
 		{
@@ -1539,7 +1539,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 		}
 
 		showOther = true;
-	}
+    }*/
 
 	//----------------------------------------------------------------------------------------//
 
@@ -1651,7 +1651,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 		vmt.state.showDetail = true;
 	}
 
-	if( !( value = vmt.parameters.take("$detailblendfactor2") ).isEmpty() ) {
+    /*if( !( value = vmt.parameters.take("$detailblendfactor2") ).isEmpty() ) {
 
 		if (!vmt.state.detailEnabled) {
 			Error("$detailblendfactor2 is only supported with "
@@ -1693,9 +1693,9 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 			ui->doubleSpinBox_detailAmount3->setValue(amount);
 
         vmt.state.showDetail = true;
-	}
+    }*/
 
-	if( !( value = vmt.parameters.take("$detailblendfactor4") ).isEmpty() ) {
+    /*if( !( value = vmt.parameters.take("$detailblendfactor4") ).isEmpty() ) {
 
 		if (!vmt.state.detailEnabled) {
 			Error("$detailblendfactor4 is only supported with "
@@ -1710,7 +1710,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 			ui->doubleSpinBox_detailAmount4->setValue(amount);
 
         vmt.state.showDetail = true;
-	}
+    }*/
 
 	//----------------------------------------------------------------------------------------//
 
@@ -1757,7 +1757,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 	if(vmt.state.showPhong) {
 		// showPhong is only true on specific shaders so we can safely
 		// branch with the else
-		if (vmt.shader == Shader::S_VertexLitGeneric && !ui->action_phong->isChecked()) {
+        if (vmt.shader == Shader::S_Deferred_Brush && !ui->action_phong->isChecked()) {
 			ui->action_phong->trigger();
 		} else if (!ui->action_phongBrush->isChecked()) {
 			ui->action_phongBrush->trigger();
@@ -2282,12 +2282,11 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	if( !( value = vmt.parameters.take("$model") ).isEmpty() )
 	{
-		if (!(vmt.shaderName.compare("VertexLitGeneric", Qt::CaseInsensitive) ||
-			  vmt.shaderName.compare("LightmappedGeneric", Qt::CaseInsensitive) ||
-			  vmt.shaderName.compare("WorldVertexTransition", Qt::CaseInsensitive) ||
+        if (!(vmt.shaderName.compare("Deferred_Brush", Qt::CaseInsensitive) ||
+              vmt.shaderName.compare("Deferred_Model", Qt::CaseInsensitive) ||
 			  vmt.shaderName.compare("Refract", Qt::CaseInsensitive)))
 		{
-			Error("$model only works with the LightmappedGeneric, VertexLitGeneric, Refract or WorldVertexTransition shaders!")
+            Error("$model only works with the Deferred_Model, Deferred_Brush, or Refract shaders!")
 		}
 
 		if( loadBoolParameter( value, "$model") )
@@ -2502,7 +2501,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	//----------------------------------------------------------------------------------------//
 
-	if( !( value = vmt.parameters.take("$diffusetransform") ).isEmpty() )
+	if( !( value = vmt.parameters.take("$basetexturetransform") ).isEmpty() )
 	{
 		value = value.simplified();
 
@@ -2517,7 +2516,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(centerX >= 0.0 && centerX <= 1.0) )
 					{
-						Error("$diffusetransform center X value: \"" + Str(centerX) + "\" is not in the valid range of 0.0 to 1.0!")
+						Error("$basetexturetransform center X value: \"" + Str(centerX) + "\" is not in the valid range of 0.0 to 1.0!")
 					}
 				}
 				else
@@ -2528,7 +2527,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(centerY >= 0.0 && centerY <= 1.0) )
 					{
-						Error("$diffusetransform center Y value: \"" + Str(centerY) + "\" is not in the valid range of 0.0 to 1.0!")
+						Error("$basetexturetransform center Y value: \"" + Str(centerY) + "\" is not in the valid range of 0.0 to 1.0!")
 					}
 				}
 				else
@@ -2539,7 +2538,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(scaleX >= 0.0 && scaleX <= 255.0) )
 					{
-						Error("$diffusetransform scale X value: \"" + Str(scaleX) + "\" is not in the valid range of 0.0 to 255.0!")
+						Error("$basetexturetransform scale X value: \"" + Str(scaleX) + "\" is not in the valid range of 0.0 to 255.0!")
 					}
 				}
 				else
@@ -2550,7 +2549,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(scaleY >= 0.0 && scaleY <= 255.0) )
 					{
-						Error("$diffusetransform scale Y value: \"" + Str(scaleY) + "\" is not in the valid range of 0.0 to 255.0!")
+						Error("$basetexturetransform scale Y value: \"" + Str(scaleY) + "\" is not in the valid range of 0.0 to 255.0!")
 					}
 				}
 				else
@@ -2561,7 +2560,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(angle >= -360.0 && angle <= 360.0) )
 					{
-						Error("$diffusetransform rotate angle value \"" + Str(angle) + "\" is not in the valid range of -360.0 to 360.0!")
+						Error("$basetexturetransform rotate angle value \"" + Str(angle) + "\" is not in the valid range of -360.0 to 360.0!")
 					}
 				}
 				else
@@ -2572,7 +2571,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(translateX >= 0.0 && translateX <= 1.0) )
 					{
-						Error("$diffusetransform translate X value: \"" + Str(translateX) + "\" is not in the valid range of 0.0 to 1.0!")
+						Error("$basetexturetransform translate X value: \"" + Str(translateX) + "\" is not in the valid range of 0.0 to 1.0!")
 					}
 				}
 				else
@@ -2583,7 +2582,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 				{
 					if( !(translateY >= 0.0 && translateY <= 1.0) )
 					{
-						Error("$diffusetransform translate Y value \"" + Str(translateY) + "\" is not in the valid range of 0.0 to 1.0!")
+						Error("$basetexturetransform translate Y value \"" + Str(translateY) + "\" is not in the valid range of 0.0 to 1.0!")
 					}
 				}
 				else
@@ -2603,7 +2602,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 				if( !transformsModified(0) )
 				{
-					Info("$diffusetransform contains the default value: \"center 0.5 0.5 scale 1 1 rotate 0 translate 0 0\"!")
+					Info("$basetexturetransform contains the default value: \"center 0.5 0.5 scale 1 1 rotate 0 translate 0 0\"!")
 				}
 			}
 			else
@@ -2615,10 +2614,10 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 		{
 			error3:
 
-			Error("$diffusetransform value: \"" + value + "\" is not in the valid format: \"center <X float> <Y float> scale <X float> <Y float> rotate <angle int> translate <X float> <Y float>\"!")
+			Error("$basetexturetransform value: \"" + value + "\" is not in the valid format: \"center <X float> <Y float> scale <X float> <Y float> rotate <angle int> translate <X float> <Y float>\"!")
 		}
 
-		showDiffuseTransform = true;
+		showBaseTextureTransform = true;
 	}
 
 	if( !( value = vmt.parameters.take("$bumptransform") ).isEmpty() )
@@ -3458,7 +3457,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	if( !(value = vmt.parameters.value("$rimlight")).isEmpty() ) {
 
-		if( vmt.shaderName.compare("VertexLitGeneric", Qt::CaseInsensitive) )
+        if( vmt.shaderName.compare("Deferred_Brush", Qt::CaseInsensitive) )
 			rimLightWrongShader = true;
 		else
 			showRimLight = true;
@@ -3466,7 +3465,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	if( !( value = vmt.parameters.take("$rimlightexponent") ).isEmpty() ) {
 
-		if( vmt.shaderName.compare("VertexLitGeneric", Qt::CaseInsensitive) )
+        if( vmt.shaderName.compare("Deferred_Brush", Qt::CaseInsensitive) )
 			rimLightWrongShader = true;
 		else
 			showRimLight = true;
@@ -3478,7 +3477,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	if( !( value = vmt.parameters.take("$rimlightboost") ).isEmpty() )  {
 
-		if( vmt.shaderName.compare("VertexLitGeneric", Qt::CaseInsensitive) )
+        if( vmt.shaderName.compare("Deferred_Brush", Qt::CaseInsensitive) )
 			rimLightWrongShader = true;
 		else
 			showRimLight = true;
@@ -3490,7 +3489,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	if( !( value = vmt.parameters.take("$rimlightmask") ).isEmpty() ) {
 
-		if( vmt.shaderName.compare("VertexLitGeneric", Qt::CaseInsensitive) )
+        if( vmt.shaderName.compare("Deferred_Brush", Qt::CaseInsensitive) )
 			rimLightWrongShader = true;
 		else
 			showRimLight = true;
@@ -3503,7 +3502,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 		Error("Parameters regarding rimlight require \"$rimlight 1\"!")
 
 	if(rimLightWrongShader)
-		Error("Parameters regarding rimlight only work with the VertexLitGeneric shader!")
+        Error("Parameters regarding rimlight only work with the Deferred_Brush shader!")
 
 	//----------------------------------------------------------------------------------------//
 
@@ -3575,7 +3574,7 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 	if (vmt.parameters.contains("$scale")) {
 
 		if( vmt.shaderName != "Lightmapped_4WayBlend")
-			Error("$scale is deprecated. Consider using $diffusetransform or $bumptransform!")
+			Error("$scale is deprecated. Consider using $basetexturetransform or $bumptransform!")
 	}
 
 	//----------------------------------------------------------------------------------------//
@@ -3595,11 +3594,11 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 
 	//----------------------------------------------------------------------------------------//
 
-	if(showDiffuse && !ui->action_diffuse->isChecked())
-		ui->action_diffuse->trigger();
+	if(showBaseTexture && !ui->action_baseTexture->isChecked())
+		ui->action_baseTexture->trigger();
 
-	if(showDiffuse2 && !ui->action_diffuse2->isChecked())
-		ui->action_diffuse2->trigger();
+	if(showBaseTexture2 && !ui->action_baseTexture2->isChecked())
+		ui->action_baseTexture2->trigger();
 
 	if(vmt.state.showDetail && !ui->action_detail->isChecked())
 		ui->action_detail->trigger();
@@ -3654,8 +3653,8 @@ void MainWindow::parseVMT( VmtFile vmt, bool isTemplate )
 	if(showWaterFog && !ui->action_fog->isChecked())
 		ui->action_fog->trigger();
 
-	if(showDiffuseTransform && !ui->action_diffuseTransforms->isChecked())
-		ui->action_diffuseTransforms->trigger();
+	if(showBaseTextureTransform && !ui->action_baseTextureTransforms->isChecked())
+		ui->action_baseTextureTransforms->trigger();
 
 	if(showBumpmapTransform && !ui->action_bumpmapTransforms->isChecked())
 		ui->action_bumpmapTransforms->trigger();
@@ -3693,10 +3692,10 @@ VmtFile MainWindow::makeVMT()
 		vmtFile.parameters.insert( "include", tmp );
 
 
-	if( !ui->groupBox_diffuse->isHidden() ) {
+	if( !ui->groupBox_baseTexture->isHidden() ) {
 
 		if( !( tmp = ui->lineEdit_diffuse->text().trimmed() ).isEmpty() )
-			vmtFile.parameters.insert( "$diffuse", tmp );
+            vmtFile.parameters.insert( "$diffuse", tmp );
 
 		if( !( tmp = ui->lineEdit_bumpmap->text().trimmed() ).isEmpty() )
 			vmtFile.parameters.insert( "$bumpmap", tmp );
@@ -3740,10 +3739,10 @@ VmtFile MainWindow::makeVMT()
 
 	//---------------------------------------------------------------------------------------//
 
-	if( !ui->groupBox_diffuse2->isHidden() ) {
+	if( !ui->groupBox_baseTexture2->isHidden() ) {
 
 		if( ui->lineEdit_diffuse2->isEnabled()  && !( tmp = ui->lineEdit_diffuse2->text().trimmed() ).isEmpty() )
-			vmtFile.parameters.insert( "$diffuse2", tmp );
+            vmtFile.parameters.insert( "$diffuse2", tmp );
 
 		if( !( tmp = ui->lineEdit_bumpmap2->text().trimmed() ).isEmpty() )
 			vmtFile.parameters.insert( "$bumpmap2", tmp );
@@ -3781,10 +3780,10 @@ VmtFile MainWindow::makeVMT()
 
 	//---------------------------------------------------------------------------------------//
 
-	if( !ui->groupBox_diffuse3->isHidden() ) {
+	if( !ui->groupBox_baseTexture3->isHidden() ) {
 
 		if( !( tmp = ui->lineEdit_diffuse3->text().trimmed() ).isEmpty() )
-			vmtFile.parameters.insert( "$diffuse3", tmp );
+            vmtFile.parameters.insert( "$diffuse3", tmp );
 
 		if( ui->doubleSpinBox_uvscalex3->value() != 1.0 || ui->doubleSpinBox_uvscaley3->value() != 1.0 )
 			vmtFile.parameters.insert( "$texture3_uvscale", "[" + Str(ui->doubleSpinBox_uvscalex3->value())
@@ -3808,10 +3807,10 @@ VmtFile MainWindow::makeVMT()
 
 	//---------------------------------------------------------------------------------------//
 
-	if( !ui->groupBox_diffuse4->isHidden() ) {
+	if( !ui->groupBox_baseTexture4->isHidden() ) {
 
 		if( !( tmp = ui->lineEdit_diffuse4->text().trimmed() ).isEmpty() )
-			vmtFile.parameters.insert( "$diffuse4", tmp );
+			vmtFile.parameters.insert( "$basetexture4", tmp );
 
 		if( ui->doubleSpinBox_uvscalex4->value() != 1.0 || ui->doubleSpinBox_uvscaley4->value() != 1.0 )
 			vmtFile.parameters.insert( "$texture4_uvscale", "[" + Str(ui->doubleSpinBox_uvscalex4->value())
@@ -3838,7 +3837,7 @@ VmtFile MainWindow::makeVMT()
 	if (!ui->groupBox_unlitTwoTexture->isHidden()) {
 
 		if( !(tmp = ui->lineEdit_unlitTwoTextureDiffuse->text().trimmed()).isEmpty() )
-			vmtFile.parameters.insert( "$diffuse", tmp );
+			vmtFile.parameters.insert( "$basetexture", tmp );
 
 		if( !(tmp = ui->lineEdit_unlitTwoTextureDiffuse2->text().trimmed()).isEmpty() )
 			vmtFile.parameters.insert( "$texture2", tmp );
@@ -3907,7 +3906,7 @@ VmtFile MainWindow::makeVMT()
 				vmtFile.parameters.insert( "$detailblendfactor4", Str( ui->doubleSpinBox_detailAmount4->value() ));
 		}
 
-		if( ui->comboBox_shader->currentText() == "WorldVertexTransition" ) {
+        /*if( ui->comboBox_shader->currentText() == "WorldVertexTransition" ) {
 
 			if( ui->doubleSpinBox_detailAmount2->isEnabled() && ui->doubleSpinBox_detailAmount2->value() != 1.0 )
 				vmtFile.parameters.insert( "$detailblendfactor2", Str( ui->doubleSpinBox_detailAmount2->value() ));
@@ -3915,8 +3914,8 @@ VmtFile MainWindow::makeVMT()
 			if( !ui->lineEdit_detail2->text().trimmed().isEmpty() )
 				vmtFile.parameters.insert( "$detail2", ui->lineEdit_detail2->text().trimmed() );
 
-			/*if( ui->comboBox_detailBlendMode2->isEnabled() && ui->comboBox_detailBlendMode2->currentIndex() != 0 )
-				vmtFile.parameters.insert( "$detailblendmode2", Str( ui->comboBox_detailBlendMode2->currentIndex() ));*/
+            //if( ui->comboBox_detailBlendMode2->isEnabled() && ui->comboBox_detailBlendMode2->currentIndex() != 0 )
+                //vmtFile.parameters.insert( "$detailblendmode2", Str( ui->comboBox_detailBlendMode2->currentIndex() ));
 
 			if( ui->checkBox_detailScaleUniform2->isChecked() ||
 					ui->doubleSpinBox_detailScale2->value() == ui->doubleSpinBox_detailScaleY2->value() )
@@ -3926,7 +3925,7 @@ VmtFile MainWindow::makeVMT()
 				vmtFile.parameters.insert( "$detailscale2", QString( "[" + Str( ui->doubleSpinBox_detailScale2->value()) +
 																	" " + Str( ui->doubleSpinBox_detailScaleY2->value()) + "]" ) );
 			}
-		}
+        }*/
 	}
 
 	//---------------------------------------------------------------------------------------//
@@ -4212,8 +4211,8 @@ VmtFile MainWindow::makeVMT()
 		if( !ui->lineEdit_emissiveBlendTexture->text().trimmed().isEmpty() )
 			vmtFile.parameters.insert( "$emissiveblendtexture", ui->lineEdit_emissiveBlendTexture->text().trimmed() );
 
-		if( !ui->lineEdit_emissiveBlendDiffuse->text().trimmed().isEmpty() )
-			vmtFile.parameters.insert( "$emissiveblenddiffuse", ui->lineEdit_emissiveBlendDiffuse->text().trimmed() );
+		if( !ui->lineEdit_emissiveBlendBaseTexture->text().trimmed().isEmpty() )
+			vmtFile.parameters.insert( "$emissiveblendbasetexture", ui->lineEdit_emissiveBlendBaseTexture->text().trimmed() );
 
 		if( !ui->lineEdit_emissiveBlendFlowTexture->text().trimmed().isEmpty() )
 			vmtFile.parameters.insert( "$emissiveblendflowtexture", ui->lineEdit_emissiveBlendFlowTexture->text().trimmed() );
@@ -4326,11 +4325,11 @@ VmtFile MainWindow::makeVMT()
 
 	//---------------------------------------------------------------------------------------//
 
-	if( !ui->groupBox_diffuseTransforms->isHidden() )
+	if( !ui->groupBox_baseTextureTransforms->isHidden() )
 	{
 		if( transformsModified(0) )
 		{
-			vmtFile.parameters.insert( "$diffusetransform", "center " + Str(ui->doubleSpinBox_bt_centerX->value()) + " " + Str(ui->doubleSpinBox_bt_centerY->value()) +
+			vmtFile.parameters.insert( "$basetexturetransform", "center " + Str(ui->doubleSpinBox_bt_centerX->value()) + " " + Str(ui->doubleSpinBox_bt_centerY->value()) +
 																" scale " + Str(ui->doubleSpinBox_bt_scaleX->value()) + " " + Str(ui->doubleSpinBox_bt_scaleY->value()) +
 																" rotate " + Str(ui->doubleSpinBox_bt_angle->value())  +
 																" translate " + Str(ui->doubleSpinBox_bt_translateX->value()) + " " + Str(ui->doubleSpinBox_bt_translateY->value()) );
@@ -4457,7 +4456,7 @@ VmtFile MainWindow::makeVMT()
 
 			vmtFile.parameters.insert( "$surfaceprop", tmp );
 
-		} else if( !ui->groupBox_diffuse->isHidden() && !( tmp = ui->comboBox_surface->currentText() ).isEmpty() ) {
+		} else if( !ui->groupBox_baseTexture->isHidden() && !( tmp = ui->comboBox_surface->currentText() ).isEmpty() ) {
 
 			vmtFile.parameters.insert( "$surfaceprop", tmp );
 
@@ -4696,7 +4695,7 @@ void MainWindow::resetWidgets() {
 	clearLineEditAction(ui->lineEdit_specmap2);
 	clearLineEditAction(ui->lineEdit_tintMask);
 	clearLineEditAction(ui->lineEdit_emissiveBlendTexture);
-	clearLineEditAction(ui->lineEdit_emissiveBlendDiffuse);
+	clearLineEditAction(ui->lineEdit_emissiveBlendBaseTexture);
 	clearLineEditAction(ui->lineEdit_emissiveBlendFlowTexture);
 
 	//----------------------------------------------------------------------------------------//
@@ -4710,7 +4709,7 @@ void MainWindow::resetWidgets() {
 	ui->action_refract->setDisabled(true);
 
 	ui->comboBox_surface->setCurrentIndex(0);
-	ui->comboBox_shader->setCurrentIndex(ui->comboBox_shader->findText("LightmappedGeneric"));
+    ui->comboBox_shader->setCurrentIndex(ui->comboBox_shader->findText("Deferred_Model"));
 		this->shaderChanged();
 	ui->comboBox_surface2->setCurrentIndex(0);
 
@@ -5502,12 +5501,12 @@ QString MainWindow::validateTexture(QString objectName, QString vtf, const QStri
 
 			if( !getCurrentGame().isEmpty() ) {
 
-				if( objectName == "preview_diffuse1" || objectName == "preview_bumpmap1" ) {
+				if( objectName == "preview_basetexture1" || objectName == "preview_bumpmap1" ) {
 
 					glWidget_diffuse1->setVisible(true);
 					previewTexture(objectName, vtf, true, false, false, false);
 
-				} else if( objectName == "preview_diffuse2" || objectName == "preview_bumpmap2" ) {
+				} else if( objectName == "preview_basetexture2" || objectName == "preview_bumpmap2" ) {
 
 					glWidget_diffuse2->setVisible(true);
 					previewTexture(objectName, vtf, true, false, false, false);
@@ -5540,12 +5539,12 @@ QString MainWindow::validateTexture(QString objectName, QString vtf, const QStri
 
 			if( !getCurrentGame().isEmpty() ) {
 
-				if( objectName == "preview_diffuse1" || objectName == "preview_bumpmap1" ) {
+				if( objectName == "preview_basetexture1" || objectName == "preview_bumpmap1" ) {
 
 					glWidget_diffuse1->setVisible(true);
 					previewTexture(objectName, vtf, true, false, false, false);
 
-				} else if( objectName == "preview_diffuse2" || objectName == "preview_bumpmap2" ) {
+				} else if( objectName == "preview_basetexture2" || objectName == "preview_bumpmap2" ) {
 
 					glWidget_diffuse2->setVisible(true);
 					previewTexture(objectName, vtf, true, false, false, false);
@@ -5589,7 +5588,7 @@ bool MainWindow::isGroupboxChanged(MainWindow::GroupBoxes groupBox)
 {
 	switch(groupBox)
 	{
-	case Diffuse:
+	case BaseTexture:
 
 		return (ui->lineEdit_diffuse->text() != "" ||
 				ui->lineEdit_bumpmap->text() != "" ||
@@ -5601,7 +5600,7 @@ bool MainWindow::isGroupboxChanged(MainWindow::GroupBoxes groupBox)
 	case NormalBlend:
 		return normalblend::hasChanged(ui);
 
-	case Diffuse2:
+	case BaseTexture2:
 
 		return (ui->lineEdit_diffuse2->text() != "" ||
 				ui->lineEdit_bumpmap2->text() != "" ||
@@ -5615,7 +5614,7 @@ bool MainWindow::isGroupboxChanged(MainWindow::GroupBoxes groupBox)
 				ui->doubleSpinBox_blendend2->value() != 1.0 ||
 				ui->doubleSpinBox_blendfactor2->value() != 1.0);
 
-	case Diffuse3:
+	case BaseTexture3:
 
 		return (ui->lineEdit_diffuse3->text() != "" ||
 				ui->doubleSpinBox_uvscalex3->value() != 1.0 ||
@@ -5626,7 +5625,7 @@ bool MainWindow::isGroupboxChanged(MainWindow::GroupBoxes groupBox)
 				ui->doubleSpinBox_blendend3->value() != 1.0 ||
 				ui->doubleSpinBox_blendfactor3->value() != 1.0);
 
-	case Diffuse4:
+	case BaseTexture4:
 
 		return (ui->lineEdit_diffuse4->text() != "" ||
 				ui->doubleSpinBox_uvscalex4->value() != 1.0 ||
@@ -5768,7 +5767,7 @@ bool MainWindow::isGroupboxChanged(MainWindow::GroupBoxes groupBox)
 				ui->doubleSpinBox_scrollX1->value() != 0.0 ||
 				ui->doubleSpinBox_scrollY2->value() != 0.0);
 
-	case DiffuseTransforms:
+	case BaseTextureTransforms:
 
 		return (ui->doubleSpinBox_bt_centerX->value() != 0.5 ||
 				ui->doubleSpinBox_bt_centerY->value() != 0.5 ||
@@ -6085,14 +6084,14 @@ void MainWindow::sortDroppedTextures(const QMimeData* mimeData ) {
 					else
 						processVtf("", filePath, ui->lineEdit_specmap);
 
-				} else if (shader == "VertexLitGeneric" &&
+                } else if (shader == "Deferred_Brush" &&
 							(fileName.endsWith("_glossiness") ||
 							 fileName.endsWith("_g") ||
 							 fileName.endsWith("gloss")) ) {
 
 					processVtf("", filePath, ui->lineEdit_exponentTexture);
 
-				} else if (shader == "VertexLitGeneric" &&
+                } else if (shader == "Deferred_Brush" &&
 							(fileName.endsWith("tintmask") ||
 							 fileName.endsWith("colormask") ||
 							 fileName.endsWith("_cm") ||
@@ -6102,7 +6101,7 @@ void MainWindow::sortDroppedTextures(const QMimeData* mimeData ) {
 
 				} else {
 
-					processVtf("preview_diffuse1", filePath, ui->lineEdit_diffuse);
+					processVtf("preview_basetexture1", filePath, ui->lineEdit_diffuse);
 				}
 
 				//Info("got image " + fileName);
@@ -6119,22 +6118,22 @@ void MainWindow::handleTextureDrop(const QString& filePath)
 	// TODO: Only handle when a game is selected?
 
 	if (name == "lineEdit_diffuse")
-		processVtf("preview_diffuse1", filePath, ui->lineEdit_diffuse);
+		processVtf("preview_basetexture1", filePath, ui->lineEdit_diffuse);
 
 	else if (name == "lineEdit_bumpmap" )
 		processVtf( "preview_bumpmap1", filePath, ui->lineEdit_bumpmap );
 
 	else if (name == "lineEdit_diffuse2" )
-		processVtf( "preview_diffuse2", filePath, ui->lineEdit_diffuse2 );
+		processVtf( "preview_basetexture2", filePath, ui->lineEdit_diffuse2 );
 
 	else if (name == "lineEdit_bumpmap2" )
 		processVtf( "preview_bumpmap2", filePath, ui->lineEdit_bumpmap2 );
 
 	else if (name == "lineEdit_diffuse3" )
-		processVtf( "preview_diffuse3", filePath, ui->lineEdit_diffuse3 );
+		processVtf( "preview_basetexture3", filePath, ui->lineEdit_diffuse3 );
 
 	else if (name == "lineEdit_diffuse4" )
-		processVtf( "preview_diffuse4", filePath, ui->lineEdit_diffuse4 );
+		processVtf( "preview_basetexture4", filePath, ui->lineEdit_diffuse4 );
 
 	else if (name == "lineEdit_detail" )
 		processVtf( "preview_detail", filePath, ui->lineEdit_detail );
@@ -6153,9 +6152,9 @@ void MainWindow::handleTextureDrop(const QString& filePath)
 		processVtf( "preview_bumpmap1", filePath, ui->lineEdit_waterNormalMap );
 
 	else if (name == "lineEdit_unlitTwoTextureDiffuse" )
-		processVtf( "preview_diffuse1", filePath, ui->lineEdit_unlitTwoTextureDiffuse );
+		processVtf( "preview_basetexture1", filePath, ui->lineEdit_unlitTwoTextureDiffuse );
 	else if (name == "lineEdit_unlitTwoTextureDiffuse2" )
-		processVtf( "preview_diffuse2", filePath, ui->lineEdit_unlitTwoTextureDiffuse2 );
+		processVtf( "preview_basetexture2", filePath, ui->lineEdit_unlitTwoTextureDiffuse2 );
 
 	else if (name == "lineEdit_blendmodulate" )
 		processVtf( "preview_blendmod", filePath, ui->lineEdit_blendmodulate );
@@ -6207,8 +6206,8 @@ void MainWindow::handleTextureDrop(const QString& filePath)
 	else if (name == "lineEdit_emissiveBlendTexture" )
 		processVtf( "", filePath, ui->lineEdit_emissiveBlendTexture );
 
-	else if (name == "lineEdit_emissiveBlendDiffuse" )
-		processVtf( "", filePath, ui->lineEdit_emissiveBlendDiffuse );
+	else if (name == "lineEdit_emissiveBlendBaseTexture" )
+		processVtf( "", filePath, ui->lineEdit_emissiveBlendBaseTexture );
 
 	else if (name == "lineEdit_emissiveBlendFlowTexture" )
 		processVtf( "", filePath, ui->lineEdit_emissiveBlendFlowTexture );
@@ -6219,7 +6218,7 @@ void MainWindow::finishedLoading()
 {
 	TextureThread* thread = reinterpret_cast<TextureThread*>(sender());
 
-	if( thread->object == "preview_diffuse1" ) {
+	if( thread->object == "preview_basetexture1" ) {
 
 		glWidget_diffuse1->loadTexture( "Cache/" + thread->output + ".png", glWidget_diffuse1->getBumpmap() );
 
@@ -6259,7 +6258,7 @@ void MainWindow::finishedLoading()
 				previewTexture( 4, ui->lineEdit_bumpmap->text() );
 		}
 
-	} else if( thread->object == "preview_diffuse2" ) {
+	} else if( thread->object == "preview_basetexture2" ) {
 
 		glWidget_diffuse2->loadTexture( "Cache/" + thread->output + ".png", glWidget_diffuse2->getBumpmap()  );
 
@@ -6297,7 +6296,7 @@ void MainWindow::previewTexture()
 	QWidget* caller = qobject_cast<QWidget *>( sender() );
 
 	if( caller->objectName() == "lineEdit_diffuse" ) {
-		previewTexture( "preview_diffuse1",
+		previewTexture( "preview_basetexture1",
 						ui->lineEdit_diffuse->text(),
 						true,
 						ui->checkBox_transparent->isChecked() || ui->checkBox_alphaTest->isChecked() || ui->checkBox_normalalpha->isChecked(),
@@ -6308,11 +6307,11 @@ void MainWindow::previewTexture()
 	else if( caller->objectName() == "lineEdit_bumpmap2" )
 		previewTexture( "preview_bumpmap2", ui->lineEdit_bumpmap2->text(), false, false, false, false );
 	else if( caller->objectName() == "lineEdit_diffuse2" )
-		previewTexture( "preview_diffuse2", ui->lineEdit_diffuse2->text(), false, false, false, false );
+		previewTexture( "preview_basetexture2", ui->lineEdit_diffuse2->text(), false, false, false, false );
 	else if( caller->objectName() == "lineEdit_diffuse3" )
-		previewTexture( "preview_diffuse3", ui->lineEdit_diffuse3->text(), false, false, false, false );
+		previewTexture( "preview_basetexture3", ui->lineEdit_diffuse3->text(), false, false, false, false );
 	else if( caller->objectName() == "lineEdit_diffuse4" )
-		previewTexture( "preview_diffuse4", ui->lineEdit_diffuse4->text(), false, false, false, false );
+		previewTexture( "preview_basetexture4", ui->lineEdit_diffuse4->text(), false, false, false, false );
 
 	else if( caller->objectName() == "lineEdit_detail" )
 		previewTexture( "preview_detail", ui->lineEdit_detail->text(), false, false, false, false );
@@ -6326,9 +6325,9 @@ void MainWindow::previewTexture()
 		previewTexture( "preview_normalmap1", ui->lineEdit_waterNormalMap->text(), false, false, false, false );
 
 	else if( caller->objectName() == "lineEdit_unlitTwoTextureDiffuse" )
-		previewTexture( "preview_diffuse1", ui->lineEdit_unlitTwoTextureDiffuse->text(), false, false, false, false );
+		previewTexture( "preview_basetexture1", ui->lineEdit_unlitTwoTextureDiffuse->text(), false, false, false, false );
 	else if( caller->objectName() == "lineEdit_unlitTwoTextureDiffuse2" )
-		previewTexture( "preview_diffuse2", ui->lineEdit_unlitTwoTextureDiffuse2->text(), false, false, false, false );
+		previewTexture( "preview_basetexture2", ui->lineEdit_unlitTwoTextureDiffuse2->text(), false, false, false, false );
 
 	else if( caller->objectName() == "lineEdit_bump2" )
 		previewTexture( "preview_bumpmap2", ui->lineEdit_bump2->text(), false, false, false, false );
@@ -6342,7 +6341,7 @@ void MainWindow::previewTexture()
 	repaint();
 }
 
-bool MainWindow::previewTexture( const QString& object, const QString& texture, bool diffuse, bool alpha, bool alphaTest, bool alphaOnly, bool ignoreCache ) {
+bool MainWindow::previewTexture( const QString& object, const QString& texture, bool baseTexture, bool alpha, bool alphaTest, bool alphaOnly, bool ignoreCache ) {
 
 	checkCacheSize();
 
@@ -6363,7 +6362,7 @@ bool MainWindow::previewTexture( const QString& object, const QString& texture, 
 		QFile vtfFile( texturePath + ".vtf" );
 		if( !vtfFile.exists() ) {
 
-			if( object == "preview_diffuse1" ) {
+			if( object == "preview_basetexture1" ) {
 
 				glWidget_diffuse1->loadTexture("", glWidget_diffuse1->getBumpmap());
 
@@ -6383,7 +6382,7 @@ bool MainWindow::previewTexture( const QString& object, const QString& texture, 
 
 			}
 
-			else if( object == "preview_diffuse2" )
+			else if( object == "preview_basetexture2" )
 				glWidget_diffuse2->loadTexture("", glWidget_diffuse2->getBumpmap());
 			else if( object == "preview_bumpmap2" )
 				glWidget_diffuse2->loadTexture(glWidget_diffuse2->getDiffuse(), "");
@@ -6405,12 +6404,12 @@ bool MainWindow::previewTexture( const QString& object, const QString& texture, 
 
 		} else {
 
-			if( object == "preview_diffuse1" )
+			if( object == "preview_basetexture1" )
 				glWidget_diffuse1->loadTexture("", glWidget_diffuse1->getBumpmap());
 			else if( object == "preview_bumpmap1" )
 				glWidget_diffuse1->loadTexture(glWidget_diffuse1->getDiffuse(), "");
 
-			else if( object == "preview_diffuse2" )
+			else if( object == "preview_basetexture2" )
 				glWidget_diffuse2->loadTexture("", glWidget_diffuse2->getBumpmap());
 			else if( object == "preview_bumpmap2" )
 				glWidget_diffuse2->loadTexture(glWidget_diffuse2->getDiffuse(), "");
@@ -6433,7 +6432,7 @@ bool MainWindow::previewTexture( const QString& object, const QString& texture, 
 
 		textureThread->alpha = alpha;
 		textureThread->alphaTest = alphaTest;
-		textureThread->diffuse = diffuse;
+		textureThread->baseTexture = baseTexture;
 		textureThread->alphaOnly = alphaOnly;
 		textureThread->object = object;
 
@@ -6447,7 +6446,7 @@ bool MainWindow::previewTexture( const QString& object, const QString& texture, 
 
 		if( cacheFile.exists() )
 		{
-			if( object == "preview_diffuse1" ) {
+			if( object == "preview_basetexture1" ) {
 
 				glWidget_diffuse1->loadTexture( "Cache/" + textureThread->output, glWidget_diffuse1->getBumpmap() );
 
@@ -6489,7 +6488,7 @@ bool MainWindow::previewTexture( const QString& object, const QString& texture, 
 				}
 			}
 
-			else if( object == "preview_diffuse2" )
+			else if( object == "preview_basetexture2" )
 				glWidget_diffuse2->loadTexture( "Cache/" + textureThread->output, glWidget_diffuse2->getBumpmap() );
 			else if( object == "preview_bumpmap2" )
 				glWidget_diffuse2->loadTexture( glWidget_diffuse2->getDiffuse(), "Cache/" + textureThread->output );
@@ -6622,13 +6621,13 @@ void MainWindow::previewTexture(const QString& object)
 	else if (tga.exists())
 		cacheFile = cacheFileTga;
 
-	if (object == "preview_diffuse1") {
+	if (object == "preview_basetexture1") {
 		glWidget_diffuse1->loadTexture(cacheFile, glWidget_diffuse1->getBumpmap());
 
 	} else if (object == "preview_bumpmap1") {
 		glWidget_diffuse1->loadTexture(glWidget_diffuse1->getDiffuse(), cacheFile);
 
-	} else if(object == "preview_diffuse2") {
+	} else if(object == "preview_basetexture2") {
 		glWidget_diffuse2->loadTexture(cacheFile, glWidget_diffuse2->getBumpmap());
 
 	} else if (object == "preview_bumpmap2") {
@@ -6742,7 +6741,7 @@ void MainWindow::gameChanged( const QString& game )
 		ui->toolButton_maskTexture->setDisabled(true);
 
 		ui->toolButton_emissiveBlendTexture->setDisabled(true);
-		ui->toolButton_emissiveBlendDiffuse->setDisabled(true);
+		ui->toolButton_emissiveBlendBaseTexture->setDisabled(true);
 		ui->toolButton_emissiveBlendFlowTexture->setDisabled(true);
 
 		QStringList defaultSurfaces = extractLines(":/surfaces/default");
@@ -6803,7 +6802,7 @@ void MainWindow::gameChanged( const QString& game )
 		ui->toolButton_unlitTwoTextureDiffuse2->setEnabled(true);
 
 		ui->toolButton_emissiveBlendTexture->setEnabled(true);
-		ui->toolButton_emissiveBlendDiffuse->setEnabled(true);
+		ui->toolButton_emissiveBlendBaseTexture->setEnabled(true);
 		ui->toolButton_emissiveBlendFlowTexture->setEnabled(true);
 
 		QStringList tmp(extractLines(":/surfaces/default"));
@@ -6867,11 +6866,13 @@ void MainWindow::gameChanged( const QString& game )
 void MainWindow::shaderChanged()
 {
 	bool luminanceEnabled = ui->comboBox_shader->currentText() == "Lightmapped_4WayBlend" || ui->comboBox_shader->currentText() == "Patch";
-	bool isBlend = ui->comboBox_shader->currentText() == "WorldVertexTransition";
+    bool isDeffered = ui->comboBox_shader->currentText() == "Deffered_Model" || ui->comboBox_shader->currentText() == "Deffered_Brush";
+    //bool isBlend = ui->comboBox_shader->currentText() == "WorldVertexTransition";
+    bool isBlend = false;
 
-	ui->frame_texture->setVisible(luminanceEnabled);
-	ui->frame_texture2->setVisible(luminanceEnabled);
-	ui->frame_texture3->setVisible(luminanceEnabled);
+    ui->frame_texture->setVisible(luminanceEnabled || isDeffered);
+    ui->frame_texture2->setVisible(luminanceEnabled || isDeffered);
+    ui->frame_texture3->setVisible(luminanceEnabled || isDeffered);
 	ui->frame_texture4->setVisible(luminanceEnabled);
 
 	ui->label_detailAmount2->setVisible(luminanceEnabled);
@@ -6920,11 +6921,11 @@ void MainWindow::shaderChanged()
 
 			switch(static_cast<GroupBoxes>(i)) {
 
-			case Diffuse: ui->groupBox_diffuse->setVisible(false);ui->action_diffuse->setChecked(false);break;
+			case BaseTexture: ui->groupBox_baseTexture->setVisible(false);ui->action_baseTexture->setChecked(false);break;
 			case NormalBlend:
 				normalblend::resetAction(ui);
 				break;
-			case Diffuse2: ui->groupBox_diffuse2->setVisible(false);ui->action_diffuse2->setChecked(false);break;
+			case BaseTexture2: ui->groupBox_baseTexture2->setVisible(false);ui->action_baseTexture2->setChecked(false);break;
 			case Transparency: ui->groupBox_transparency->setVisible(false);ui->action_transparency->setChecked(false);break;
 			case DetailTexture: ui->groupBox_detailTexture->setVisible(false);ui->action_detail->setChecked(false);break;
 			case Color: ui->groupBox_color->setVisible(false);ui->action_color->setChecked(false);break;
@@ -6951,15 +6952,15 @@ void MainWindow::shaderChanged()
 			case WaterRefraction: ui->groupBox_waterRefraction->setVisible(false);ui->action_refraction->setChecked(false);break;
 			case Fog: ui->groupBox_waterFog->setVisible(false);ui->action_fog->setChecked(false);break;
 			case Scroll: ui->groupBox_scroll->setVisible(false);ui->action_scroll->setChecked(false);break;
-			case DiffuseTransforms: ui->groupBox_diffuseTransforms->setVisible(false);ui->action_diffuseTransforms->setChecked(false);break;
+			case BaseTextureTransforms: ui->groupBox_baseTextureTransforms->setVisible(false);ui->action_baseTextureTransforms->setChecked(false);break;
 			case BumpMapTransforms: ui->groupBox_bumpmapTransforms->setVisible(false);ui->action_bumpmapTransforms->setChecked(false);break;
 			case Misc: ui->groupBox_misc->setVisible(false);ui->action_misc->setChecked(false);break;
 			case Patch: ui->groupBox_patch->setVisible(false);ui->action_patch->setChecked(false);break;
 			case Refract: ui->groupBox_refract->setVisible(false);ui->action_refract->setChecked(false);break;
 			case Sprite: ui->groupBox_sprite->setVisible(false);ui->action_sprite->setChecked(false);break;
 			case UnlitTwoTexture: ui->groupBox_unlitTwoTexture->setVisible(false);ui->action_unlitTwoTexture->setChecked(false);break;
-			case Diffuse3: ui->groupBox_diffuse3->setVisible(false);ui->action_diffuse3->setChecked(false);break;
-			case Diffuse4: ui->groupBox_diffuse4->setVisible(false);ui->action_diffuse4->setChecked(false);break;
+			case BaseTexture3: ui->groupBox_baseTexture3->setVisible(false);ui->action_baseTexture3->setChecked(false);break;
+			case BaseTexture4: ui->groupBox_baseTexture4->setVisible(false);ui->action_baseTexture4->setChecked(false);break;
 			}
 		}
 	}
@@ -6986,11 +6987,11 @@ void MainWindow::shaderChanged()
 
 		} else {
 
-			const auto isVertexLitGeneric =
-				(shader == "VertexLitGeneric");
+            const auto isDeferredBrush =
+                (shader == "Deferred_Brush");
 
-			ui->action_diffuse3->setVisible(luminanceEnabled);
-			ui->action_diffuse4->setVisible(luminanceEnabled);
+			ui->action_baseTexture3->setVisible(luminanceEnabled);
+			ui->action_baseTexture4->setVisible(luminanceEnabled);
 
 			ui->action_CreateBlendTexture->setVisible(isBlend || luminanceEnabled);
 
@@ -7037,37 +7038,36 @@ void MainWindow::shaderChanged()
 
 			//----------------------------------------------------------------------------------------//
 
-			ui->checkBox_model->setEnabled( shader == "VertexLitGeneric"   ||
-											shader == "LightmappedGeneric" ||
-											shader == "WorldVertexTransition" ||
+            ui->checkBox_model->setEnabled( shader == "Deferred_Brush"   ||
+                                            shader == "Deferred_Model" ||
 											shader == "Refract" );
 
-			ui->action_normalBlend->setEnabled( shader == "LightmappedGeneric" );
-			ui->action_normalBlend->setVisible( shader == "LightmappedGeneric" );
-			ui->action_rimLight->setVisible( shader == "VertexLitGeneric" );
-			ui->action_rimLight->setVisible( shader == "VertexLitGeneric" );
+            ui->action_normalBlend->setEnabled( shader == "Deferred_Model" );
+            ui->action_normalBlend->setVisible( shader == "Deferred_Model" );
+            ui->action_rimLight->setVisible( shader == "Deferred_Brush" );
+            ui->action_rimLight->setVisible( shader == "Deferred_Brush" );
 
-			ui->action_treeSway->setVisible(isVertexLitGeneric);
+            ui->action_treeSway->setVisible(isDeferredBrush);
 
-			ui->checkBox_tintSpecMask->setVisible(isVertexLitGeneric);
+            ui->checkBox_tintSpecMask->setVisible(isDeferredBrush);
 
-			ui->action_decal->setVisible(isVertexLitGeneric);
-			if (!isVertexLitGeneric) {
+            ui->action_decal->setVisible(isDeferredBrush);
+            if (!isDeferredBrush) {
 				ui->action_treeSway->setChecked(false);
 				ui->action_decal->setChecked(false);
 				ui->groupBox_treeSway->setVisible(false);
 				ui->groupBox_textureDecal->setVisible(false);
 			}
 
-			if(shader != "LightmappedGeneric") {
+            if(shader != "Deferred_Model") {
 				ui->groupBox_normalBlend->setVisible(false);
 				ui->action_normalBlend->setChecked(false);
 			}
 			ui->action_layerBlend->setVisible(isBlend);
 
-			ui->action_emissiveBlend->setVisible(isVertexLitGeneric);
+            ui->action_emissiveBlend->setVisible(isDeferredBrush);
 
-			ui->horizontalSlider_reflectivity_2->setVisible( shader == "WorldVertexTransition" );
+            /*ui->horizontalSlider_reflectivity_2->setVisible( shader == "WorldVertexTransition" );
 			ui->doubleSpinBox_reflectivity_2->setVisible( shader == "WorldVertexTransition" );
 			ui->toolButton_reflectivity_2->setVisible( shader == "WorldVertexTransition" );
 			ui->toolButton_reflectivity_2->setVisible( shader == "WorldVertexTransition" );
@@ -7075,7 +7075,7 @@ void MainWindow::shaderChanged()
 
 			ui->lineEdit_specmap2->setVisible( shader == "WorldVertexTransition" );
 			ui->toolButton_specmap2->setVisible( shader == "WorldVertexTransition" );
-			ui->label_specmap2->setVisible( shader == "WorldVertexTransition" );
+            ui->label_specmap2->setVisible( shader == "WorldVertexTransition" );*/
 
 			ui->frame_detail2->setVisible(isBlend);
 			ui->comboBox_detailBlendMode2->setVisible(false);
@@ -7087,60 +7087,67 @@ void MainWindow::shaderChanged()
 
 			//----------------------------------------------------------------------------------------//
 
-			ui->action_diffuse->setChecked(shader == "Lightmapped_4WayBlend");
-			ui->action_diffuse2->setChecked(shader == "Lightmapped_4WayBlend");
+			ui->action_baseTexture->setChecked(shader == "Lightmapped_4WayBlend");
+			ui->action_baseTexture2->setChecked(shader == "Lightmapped_4WayBlend");
 
-			ui->action_diffuse->setEnabled(shader != "Lightmapped_4WayBlend");
-			ui->action_diffuse2->setEnabled(shader != "Lightmapped_4WayBlend");
+			ui->action_baseTexture->setEnabled(shader != "Lightmapped_4WayBlend");
+			ui->action_baseTexture2->setEnabled(shader != "Lightmapped_4WayBlend");
 
-			ui->groupBox_diffuse->setVisible(shader == "Lightmapped_4WayBlend");
-			ui->groupBox_diffuse2->setVisible(shader == "Lightmapped_4WayBlend");
+			ui->groupBox_baseTexture->setVisible(shader == "Lightmapped_4WayBlend");
+			ui->groupBox_baseTexture2->setVisible(shader == "Lightmapped_4WayBlend");
 
 			if(shader == "Lightmapped_4WayBlend") {
-				ui->action_diffuse3->setEnabled(false);
-				ui->action_diffuse4->setEnabled(false);
+				ui->action_baseTexture3->setEnabled(false);
+				ui->action_baseTexture4->setEnabled(false);
 
-				ui->action_diffuse3->setChecked(true);
-				ui->action_diffuse4->setChecked(true);
+				ui->action_baseTexture3->setChecked(true);
+				ui->action_baseTexture4->setChecked(true);
 			}
 
-			ui->groupBox_diffuse3->setVisible(shader == "Lightmapped_4WayBlend");
-			ui->groupBox_diffuse4->setVisible(shader == "Lightmapped_4WayBlend");
+			ui->groupBox_baseTexture3->setVisible(shader == "Lightmapped_4WayBlend");
+			ui->groupBox_baseTexture4->setVisible(shader == "Lightmapped_4WayBlend");
 
 			//----------------------------------------------------------------------------------------//
 
 			// Base Texture not allowed
 			if (shader == "Refract" || shader == "UnlitTwoTexture" || shader == "Water") {
-				ui->action_diffuse->setChecked(false);
-				ui->groupBox_diffuse->setVisible(false);
+				ui->action_baseTexture->setChecked(false);
+				ui->groupBox_baseTexture->setVisible(false);
 
 			} else { // Base Texture enforced
 
-				ui->action_diffuse->setChecked(true);
-				ui->groupBox_diffuse->setVisible(true);
+				ui->action_baseTexture->setChecked(true);
+				ui->groupBox_baseTexture->setVisible(true);
 			}
 
-			ui->action_diffuse->setDisabled(true);
+			ui->action_baseTexture->setDisabled(true);
 
 			//----------------------------------------------------------------------------------------//
 
 			// Base Texture 2 enforced
-			if (shader == "WorldVertexTransition") {
+            /*if (shader == "WorldVertexTransition") {
 
-				ui->action_diffuse2->setChecked(true);
-				ui->groupBox_diffuse2->setVisible(true);
+				ui->action_baseTexture2->setChecked(true);
+				ui->groupBox_baseTexture2->setVisible(true);
 
 			} else { // Base Texture 2 not allowed
 
-				ui->action_diffuse2->setChecked(false);
+				ui->action_baseTexture2->setChecked(false);
 				ui->groupBox_layerblend->setVisible(false);
-			}
+            }*/
+            if (shader == "Deferred_Brush") {
+                ui->action_baseTexture2->setChecked(true);
+                ui->groupBox_baseTexture2->setVisible(true);
+            } else {
+                ui->action_baseTexture2->setChecked(false);
+                ui->groupBox_layerblend->setVisible(false);
+            }
 
 			ui->label_blendmodulate->setVisible( shader != "Lightmapped_4WayBlend" );
 			ui->toolButton_blendmodulate->setVisible( shader != "Lightmapped_4WayBlend" );
 			ui->lineEdit_blendmodulate->setVisible( shader != "Lightmapped_4WayBlend" );
 
-			ui->action_diffuse2->setDisabled(true);
+			ui->action_baseTexture2->setDisabled(true);
 
 			//----------------------------------------------------------------------------------------//
 
@@ -7268,11 +7275,11 @@ void MainWindow::shaderChanged()
 
 		ui->action_patch->setEnabled(true);
 
-		ui->action_diffuse->setEnabled(true);
-		ui->action_diffuse2->setEnabled(true);
+		ui->action_baseTexture->setEnabled(true);
+		ui->action_baseTexture2->setEnabled(true);
 
-		ui->action_diffuse->setVisible(true);
-		ui->action_diffuse2->setVisible(true);
+		ui->action_baseTexture->setVisible(true);
+		ui->action_baseTexture2->setVisible(true);
 
 		ui->action_CreateBlendTexture->setVisible(true);
 
@@ -7311,8 +7318,8 @@ void MainWindow::shaderChanged()
 
 	ui->menu_custom->menuAction()->setVisible( ui->menu_custom->isEnabled() );
 
-	ui->action_diffuse->setVisible( ui->action_diffuse->isEnabled() );
-	ui->action_diffuse2->setVisible( ui->action_diffuse2->isEnabled() );
+	ui->action_baseTexture->setVisible( ui->action_baseTexture->isEnabled() );
+	ui->action_baseTexture2->setVisible( ui->action_baseTexture2->isEnabled() );
 	ui->action_transparency->setVisible( ui->action_transparency->isEnabled() );
 	ui->action_detail->setVisible( ui->action_detail->isEnabled() );
 	ui->action_color->setVisible( ui->action_color->isEnabled() );
@@ -7699,10 +7706,9 @@ void MainWindow::readSettings()
 
 	QString addToIniSettings;
 
-	addToIniSettings.append( addDefaultShader("LightmappedGeneric",	   true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture ) );
-	addToIniSettings.append( addDefaultShader("UnlitGeneric",		   true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture ) );
-	addToIniSettings.append( addDefaultShader("VertexLitGeneric",	   true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture ) );
-	addToIniSettings.append( addDefaultShader("WorldVertexTransition", true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture << Shader::G_Base_Texture2 ) );
+    addToIniSettings.append( addDefaultShader("Deferred_Model",	   true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture << Shader::G_Base_Texture2 << Shader::G_Base_Texture3) );
+    addToIniSettings.append( addDefaultShader("UnlitGeneric",		   true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture  ) );
+    addToIniSettings.append( addDefaultShader("Deferred_Brush",	   true, mSettings, QVector< Shader::Groups >() << Shader::G_Base_Texture << Shader::G_Base_Texture2 << Shader::G_Base_Texture3) );
 	addToIniSettings.append( addDefaultShader("UnlitTwoTexture",	   true, mSettings, QVector< Shader::Groups >() ) );
 	addToIniSettings.append( addDefaultShader("Lightmapped_4WayBlend", true, mSettings,
 											  QVector< Shader::Groups >() << Shader::G_Base_Texture  << Shader::G_Base_Texture2
@@ -8058,11 +8064,9 @@ void MainWindow::changeShader()
 	int index = 0;
 
 	if (objectName == "toolButton_Lightmapped") {
-		index = ui->comboBox_shader->findText("LightmappedGeneric", Qt::MatchFixedString);
-	} else if (objectName == "toolButton_WorldVertex") {
-		index = ui->comboBox_shader->findText("WorldVertexTransition", Qt::MatchFixedString);
+        index = ui->comboBox_shader->findText("Deferred_Model", Qt::MatchFixedString);
 	} else if (objectName == "toolButton_VertexLit") {
-		index = ui->comboBox_shader->findText("VertexLitGeneric", Qt::MatchFixedString);
+        index = ui->comboBox_shader->findText("Deferred_Brush", Qt::MatchFixedString);
 	} else if (objectName == "toolButton_Unlit") {
 	index = ui->comboBox_shader->findText("UnlitGeneric", Qt::MatchFixedString);
 	}
@@ -8081,22 +8085,22 @@ void MainWindow::browseVTF()
 	const auto name = qobject_cast<QWidget *>(sender())->objectName();
 
 	if (name == "toolButton_diffuse")
-		processVtf( "preview_diffuse1", "", ui->lineEdit_diffuse );
+		processVtf( "preview_basetexture1", "", ui->lineEdit_diffuse );
 
 	else if (name == "toolButton_bumpmap" )
 		processVtf( "preview_bumpmap1", "", ui->lineEdit_bumpmap );
 
 	else if (name == "toolButton_diffuse2" )
-		processVtf( "preview_diffuse2", "", ui->lineEdit_diffuse2 );
+		processVtf( "preview_basetexture2", "", ui->lineEdit_diffuse2 );
 
 	else if (name == "toolButton_bumpmap2" )
 		processVtf( "preview_bumpmap2", "", ui->lineEdit_bumpmap2 );
 
 	else if (name == "toolButton_diffuse3" )
-		processVtf( "preview_diffuse3", "", ui->lineEdit_diffuse3 );
+		processVtf( "preview_basetexture3", "", ui->lineEdit_diffuse3 );
 
 	else if (name == "toolButton_diffuse4" )
-		processVtf( "preview_diffuse4", "", ui->lineEdit_diffuse4 );
+		processVtf( "preview_basetexture4", "", ui->lineEdit_diffuse4 );
 
 	else if (name == "toolButton_detail" )
 		processVtf( "preview_detail", "", ui->lineEdit_detail );
@@ -8115,9 +8119,9 @@ void MainWindow::browseVTF()
 		processVtf( "preview_bumpmap1", "", ui->lineEdit_waterNormalMap );
 
 	else if (name == "toolButton_unlitTwoTextureDiffuse" )
-		processVtf( "preview_diffuse1", "", ui->lineEdit_unlitTwoTextureDiffuse );
+		processVtf( "preview_basetexture1", "", ui->lineEdit_unlitTwoTextureDiffuse );
 	else if (name == "toolButton_unlitTwoTextureDiffuse2" )
-		processVtf( "preview_diffuse2", "", ui->lineEdit_unlitTwoTextureDiffuse2 );
+		processVtf( "preview_basetexture2", "", ui->lineEdit_unlitTwoTextureDiffuse2 );
 
 	else if (name == "toolButton_blendmodulate" )
 		processVtf( "preview_blendmod", "", ui->lineEdit_blendmodulate );
@@ -8170,8 +8174,8 @@ void MainWindow::browseVTF()
 	else if (name == "toolButton_emissiveBlendTexture" )
 		processVtf( "", "", ui->lineEdit_emissiveBlendTexture );
 
-	else if (name == "toolButton_emissiveBlendDiffuse" )
-		processVtf( "", "", ui->lineEdit_emissiveBlendDiffuse );
+	else if (name == "toolButton_emissiveBlendBaseTexture" )
+		processVtf( "", "", ui->lineEdit_emissiveBlendBaseTexture );
 
 	else if (name == "toolButton_emissiveBlendFlowTexture" )
 		processVtf( "", "", ui->lineEdit_emissiveBlendFlowTexture );
@@ -9601,13 +9605,13 @@ void MainWindow::hideParameterGroupboxes()
 
 	ui->groupBox_patch->setVisible( shader == "Patch" );
 	ui->groupBox_sprite->setVisible( shader == "Sprite" );
-	ui->groupBox_diffuse->setVisible( shader == "Lightmapped_4WayBlend" || shader == "VertexLitGeneric" || shader == "WorldVertexTransition" || shader == "UnlitGeneric" || shader == "LightmappedGeneric" );
+    ui->groupBox_baseTexture->setVisible( shader == "Lightmapped_4WayBlend" || shader == "Deferred_Brush" || shader == "WorldVertexTransition" || shader == "UnlitGeneric" || shader == "Deferred_Model" );
 	ui->groupBox_refract->setVisible( shader == "Refract" );
 	ui->groupBox_unlitTwoTexture->setVisible( shader == "UnlitTwoTexture" );
 
-	ui->groupBox_diffuse2->setVisible(shader == "Lightmapped_4WayBlend");
-	ui->groupBox_diffuse3->setVisible(shader == "Lightmapped_4WayBlend");
-	ui->groupBox_diffuse4->setVisible(shader == "Lightmapped_4WayBlend");
+    ui->groupBox_baseTexture2->setVisible(shader == "Lightmapped_4WayBlend" || shader == "Deferred_Brush" || shader == "Deferred_Model");
+    ui->groupBox_baseTexture3->setVisible(shader == "Lightmapped_4WayBlend" || shader == "Deferred_Brush" || shader == "Deferred_Model");
+	ui->groupBox_baseTexture4->setVisible(shader == "Lightmapped_4WayBlend");
 
 	if( shader == "Water" )
 	{
@@ -9619,12 +9623,12 @@ void MainWindow::hideParameterGroupboxes()
 	UNCHECK_MENU( ui->menu_shading )
 	UNCHECK_MENU( ui->menu_water )
 
-	if( shader == "WorldVertexTransition" )
+    /*if( shader == "WorldVertexTransition" )
 	{
-		ui->groupBox_diffuse2->setVisible( shader == "WorldVertexTransition" );
+		ui->groupBox_baseTexture2->setVisible( shader == "WorldVertexTransition" );
 
-		ui->action_diffuse2->setChecked(true);
-	}
+		ui->action_baseTexture2->setChecked(true);
+    }*/
 }
 
 void MainWindow::refreshGameListSoft()
@@ -9957,8 +9961,8 @@ void MainWindow::processShaderGroups( Shader::Groups groups )
 {
 	switch (groups) {
 
-		case Shader::G_Base_Texture: PROCESSSHADERGROUPS(ui->action_diffuse, ui->groupBox_diffuse)
-		case Shader::G_Base_Texture2: PROCESSSHADERGROUPS(ui->action_diffuse2, ui->groupBox_diffuse2)
+		case Shader::G_Base_Texture: PROCESSSHADERGROUPS(ui->action_baseTexture, ui->groupBox_baseTexture)
+		case Shader::G_Base_Texture2: PROCESSSHADERGROUPS(ui->action_baseTexture2, ui->groupBox_baseTexture2)
 		case Shader::G_Transparency: PROCESSSHADERGROUPS(ui->action_transparency, ui->groupBox_transparency)
 		case Shader::G_Detail: PROCESSSHADERGROUPS(ui->action_detail, ui->groupBox_detailTexture)
 		case Shader::G_Color: PROCESSSHADERGROUPS(ui->action_color, ui->groupBox_color)
@@ -9974,15 +9978,15 @@ void MainWindow::processShaderGroups( Shader::Groups groups )
 		case Shader::G_Refraction: PROCESSSHADERGROUPS(ui->action_refraction, ui->groupBox_waterRefraction)
 		case Shader::G_Fog: PROCESSSHADERGROUPS(ui->action_fog, ui->groupBox_waterFog)
 		case Shader::G_Scroll: PROCESSSHADERGROUPS(ui->action_scroll, ui->groupBox_scroll)
-		case Shader::G_Base_Texture_Texture_Transforms: PROCESSSHADERGROUPS(ui->action_diffuseTransforms, ui->groupBox_diffuseTransforms)
+		case Shader::G_Base_Texture_Texture_Transforms: PROCESSSHADERGROUPS(ui->action_baseTextureTransforms, ui->groupBox_baseTextureTransforms)
 		case Shader::G_Bumpmap_Texture_Transforms: PROCESSSHADERGROUPS(ui->action_bumpmapTransforms, ui->groupBox_bumpmapTransforms)
 		case Shader::G_Miscellaneous: PROCESSSHADERGROUPS(ui->action_misc, ui->groupBox_misc)
 		case Shader::G_Refract: PROCESSSHADERGROUPS(ui->action_refract, ui->groupBox_refract)
 		case Shader::G_Patch: MsgBox::warning(NULL, "Invalid parameter passed!", "MainWindow::shaderChanged():\n\nG_Patch should not be used for a custom shader!"); break;
 		case Shader::G_Sprite: PROCESSSHADERGROUPS(ui->action_sprite, ui->groupBox_sprite)
 		case Shader::G_UnlitTwoTexture: PROCESSSHADERGROUPS(ui->action_unlitTwoTexture, ui->groupBox_unlitTwoTexture)
-		case Shader::G_Base_Texture3: PROCESSSHADERGROUPS(ui->action_diffuse3, ui->groupBox_diffuse3)
-		case Shader::G_Base_Texture4: PROCESSSHADERGROUPS(ui->action_diffuse4, ui->groupBox_diffuse4)
+		case Shader::G_Base_Texture3: PROCESSSHADERGROUPS(ui->action_baseTexture3, ui->groupBox_baseTexture3)
+		case Shader::G_Base_Texture4: PROCESSSHADERGROUPS(ui->action_baseTexture4, ui->groupBox_baseTexture4)
 	}
 }
 
@@ -10220,7 +10224,7 @@ void MainWindow::reconvertTexture(QLineEdit* lineEdit,
 
 	if( objectName == "lineEdit_diffuse" ) {
 		type = 1;
-		preview = "preview_diffuse1";
+		preview = "preview_basetexture1";
 		if (ui->checkBox_basealpha->isChecked() ||
 			ui->groupBox_selfIllumination->isVisible() ||
 			ui->checkBox_alphaTest->isChecked() ||
@@ -10238,7 +10242,7 @@ void MainWindow::reconvertTexture(QLineEdit* lineEdit,
 			noAlpha = false;
 	}
 	else if( objectName == "lineEdit_diffuse2" ) {
-		preview = "preview_diffuse2";
+		preview = "preview_basetexture2";
 		if (ui->checkBox_basealpha->isChecked() )
 			noAlpha = false;
 	}
@@ -10250,12 +10254,12 @@ void MainWindow::reconvertTexture(QLineEdit* lineEdit,
 			noAlpha = false;
 	}
 	else if( objectName == "lineEdit_diffuse3" ) {
-		preview = "preview_diffuse3";
+		preview = "preview_basetexture3";
 		if (ui->checkBox_basealpha->isChecked() )
 			noAlpha = false;
 	}
 	else if( objectName == "lineEdit_diffuse4" ) {
-		preview = "preview_diffuse4";
+		preview = "preview_basetexture4";
 		if (ui->checkBox_basealpha->isChecked() )
 			noAlpha = false;
 	}
@@ -10268,11 +10272,11 @@ void MainWindow::reconvertTexture(QLineEdit* lineEdit,
 	else if( objectName == "lineEdit_waterNormalMap" )
 		preview = "preview_bumpmap1";
 	else if( objectName == "lineEdit_unlitTwoTextureDiffuse" ) {
-		preview = "preview_diffuse1";
+		preview = "preview_basetexture1";
 		noAlpha = false;
 	}
 	else if( objectName == "lineEdit_unlitTwoTextureDiffuse2" ) {
-		preview = "preview_diffuse2";
+		preview = "preview_basetexture2";
 		noAlpha = false;
 	}
 	else if( objectName == "lineEdit_bump2" )
@@ -10458,7 +10462,7 @@ void MainWindow::reconvertAll() {
 		triggerLineEditAction(ui->lineEdit_blendmodulate);
 		triggerLineEditAction(ui->lineEdit_tintMask);
 		triggerLineEditAction(ui->lineEdit_emissiveBlendTexture);
-		triggerLineEditAction(ui->lineEdit_emissiveBlendDiffuse);
+		triggerLineEditAction(ui->lineEdit_emissiveBlendBaseTexture);
 		triggerLineEditAction(ui->lineEdit_emissiveBlendFlowTexture);
 
 	}
@@ -10561,7 +10565,7 @@ bool MainWindow::combineMaps(QLineEdit *lineEditBase, QLineEdit *lineEditAlpha) 
 
 void MainWindow::createBlendToolTexture()
 {
-	bool is4Way =  ui->comboBox_shader->currentText() == "Lightmapped_4WayBlend";
+    bool is4Way =  ui->comboBox_shader->currentText() == "Lightmapped_4WayBlend";
 	bool blendmod = true;
 
 	if(!mVMTLoaded) {
@@ -10632,7 +10636,7 @@ void MainWindow::createBlendToolTexture()
 		if (!texture4.load(QDir::currentPath() + "/Cache/" + texture4File + ".png")) {
 			Error( "Error loading Diffuse 4 texture" )
 			return;
-		}
+        }
 	} else {
 		if (!modulate.load(QDir::currentPath() + "/Cache/" + modulateFile + ".png")) {
 			qDebug() << "No blend modulate texture";
@@ -11234,9 +11238,9 @@ void ValueLineEdit::_editingFinished()
 	utils::toggle(this, checked, groupBox, mParsingVMT); \
 }
 
-void MainWindow::on_action_diffuse2_triggered(bool checked)
+void MainWindow::on_action_baseTexture2_triggered(bool checked)
 {
-	HANDLE_ACTION(ui->groupBox_diffuse2)
+	HANDLE_ACTION(ui->groupBox_baseTexture2)
 }
 
 void MainWindow::on_action_transparency_triggered(bool checked)
@@ -11340,9 +11344,9 @@ void MainWindow::on_action_fog_triggered(bool checked)
 	HANDLE_ACTION(ui->groupBox_waterFog)
 }
 
-void MainWindow::on_action_diffuseTransforms_triggered(bool checked)
+void MainWindow::on_action_baseTextureTransforms_triggered(bool checked)
 {
-	HANDLE_ACTION(ui->groupBox_diffuseTransforms)
+	HANDLE_ACTION(ui->groupBox_baseTextureTransforms)
 }
 
 void MainWindow::on_action_bumpmapTransforms_triggered(bool checked)
@@ -11365,9 +11369,9 @@ void MainWindow::on_action_scroll_triggered(bool checked)
 	HANDLE_ACTION(ui->groupBox_scroll)
 }
 
-void MainWindow::on_action_diffuse_triggered(bool checked)
+void MainWindow::on_action_baseTexture_triggered(bool checked)
 {
-	HANDLE_ACTION(ui->groupBox_diffuse)
+	HANDLE_ACTION(ui->groupBox_baseTexture)
 }
 
 void MainWindow::on_action_refract_triggered(bool checked)

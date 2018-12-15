@@ -10,15 +10,15 @@ BatchDialog::BatchDialog(const QMap<QString, QString>& availableGames,
 	VMTFile(VMTFile),
 	ui(new Ui::BatchDialog),
 	settings(settings),
-	diffuseOnly(false),
+	basetextureOnly(false),
 	availableGames(availableGames)
 {
 	ui->setupUi(this);
 
-	QString diffuse = VMTFile.parameters.value("$diffuse");
-	if( diffuse.isEmpty() ) {
+    QString basetexture = VMTFile.parameters.value("$diffuse");
+	if( basetexture.isEmpty() ) {
 
-		diffuseOnly = true;
+		basetextureOnly = true;
 
 	} else {
 
@@ -27,9 +27,9 @@ BatchDialog::BatchDialog(const QMap<QString, QString>& availableGames,
 			defaultParameters.insert(Bumpmap, VMTFile.parameters.value("$bumpmap"));
 
 			bumpmap = VMTFile.parameters.value("$bumpmap");
-			if( bumpmap.startsWith(diffuse) ) {
+			if( bumpmap.startsWith(basetexture) ) {
 
-				bumpmap = bumpmap.remove( 0, diffuse.length() );
+				bumpmap = bumpmap.remove( 0, basetexture.length() );
 
 				suffixes.insert(Bumpmap, bumpmap);
 
@@ -46,9 +46,9 @@ BatchDialog::BatchDialog(const QMap<QString, QString>& availableGames,
 			defaultParameters.insert(SelfillumMask, VMTFile.parameters.value("$selfillummask"));
 
 			selfillummask = VMTFile.parameters.value("$selfillummask");
-			if( selfillummask.startsWith(diffuse) ) {
+			if( selfillummask.startsWith(basetexture) ) {
 
-				selfillummask = selfillummask.remove( 0, diffuse.length() );
+				selfillummask = selfillummask.remove( 0, basetexture.length() );
 
 				suffixes.insert(SelfillumMask, selfillummask);
 
@@ -65,9 +65,9 @@ BatchDialog::BatchDialog(const QMap<QString, QString>& availableGames,
 			defaultParameters.insert(PhongExponentTexture, VMTFile.parameters.value("$phongexponenttexture"));
 
 			phongexponenttexture = VMTFile.parameters.value("$phongexponenttexture");
-			if( phongexponenttexture.startsWith(diffuse) ) {
+			if( phongexponenttexture.startsWith(basetexture) ) {
 
-				phongexponenttexture = phongexponenttexture.remove( 0, diffuse.length() );
+				phongexponenttexture = phongexponenttexture.remove( 0, basetexture.length() );
 
 				suffixes.insert(PhongExponentTexture, phongexponenttexture);
 
@@ -85,9 +85,9 @@ BatchDialog::BatchDialog(const QMap<QString, QString>& availableGames,
 			defaultParameters.insert(ToolTexture, VMTFile.parameters.value("$tooltexture"));
 
 			tooltexture = VMTFile.parameters.value("$tooltexture");
-			if( tooltexture.startsWith(diffuse) ) {
+			if( tooltexture.startsWith(basetexture) ) {
 
-				tooltexture = tooltexture.remove( 0, diffuse.length() );
+				tooltexture = tooltexture.remove( 0, basetexture.length() );
 
 				suffixes.insert(ToolTexture, tooltexture);
 
@@ -104,9 +104,9 @@ BatchDialog::BatchDialog(const QMap<QString, QString>& availableGames,
 			defaultParameters.insert(EnvmapMask, VMTFile.parameters.value("$envmapmask"));
 
 			envmapmask = VMTFile.parameters.value("$envmapmask");
-			if( envmapmask.startsWith(diffuse) ) {
+			if( envmapmask.startsWith(basetexture) ) {
 
-				envmapmask = envmapmask.remove( 0, diffuse.length() );
+				envmapmask = envmapmask.remove( 0, basetexture.length() );
 
 				suffixes.insert(EnvmapMask, envmapmask);
 
@@ -226,14 +226,14 @@ void BatchDialog::rek( QList<QString>* input, QList<QString>* output ) {
 		output->append(firstElement);
 		firstElement.chop(4);
 
-	bool isDiffuse = true;
+	bool isBaseTexture = true;
 
 	QMap<Parameters, QString>::const_iterator it = suffixes.constBegin();
 	while( it != suffixes.constEnd() ) {
 
 		if( firstElement.endsWith( it.value(), Qt::CaseInsensitive )) {
 
-			isDiffuse = false;
+			isBaseTexture = false;
 
 			break;
 		}
@@ -241,7 +241,7 @@ void BatchDialog::rek( QList<QString>* input, QList<QString>* output ) {
 		++it;
 	}
 
-	if(isDiffuse) {
+	if(isBaseTexture) {
 
 		for( int i = 0; i < input->count(); ++i ) {
 
@@ -290,11 +290,11 @@ void BatchDialog::batchRequested() {
 
 		QStringList singleEntries( output.at(i).split( '|', QString::SkipEmptyParts ));
 		QString firstEntry( singleEntries.first() );
-		bool isDiffuse = false;
+		bool isBaseTexture = false;
 
 		if( singleEntries.count() > 2) {
 
-			isDiffuse = true;
+			isBaseTexture = true;
 
 		} else {
 
@@ -314,7 +314,7 @@ void BatchDialog::batchRequested() {
 			}
 
 			if(!found)
-				isDiffuse = true;
+				isBaseTexture = true;
 		}
 
 		for( int j = 0; j < singleEntries.count(); ++j ) {
@@ -341,11 +341,11 @@ void BatchDialog::batchRequested() {
 			QString fileName = singleEntries.at(j);
 				fileName.chop(4);
 
-			if(isDiffuse) {
+			if(isBaseTexture) {
 
-				isDiffuse = false;
+				isBaseTexture = false;
 
-				_processParameter( "$diffuse", fileName );
+                _processParameter( "$diffuse", fileName );
 
 			} else {
 
